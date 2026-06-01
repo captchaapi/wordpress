@@ -1,0 +1,8 @@
+.captchaapi-settings .captchaapi-status {
+    margin: 1em 0;
+    max-width: 40em;
+}
+
+.captchaapi-settings .form-table fieldset label {
+    line-height: 1.8;
+}
