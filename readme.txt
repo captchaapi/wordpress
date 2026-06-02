@@ -1,6 +1,6 @@
 === captchaapi.eu Proof-of-Work CAPTCHA ===
 Contributors: captchaapi
-Tags: captcha, spam, login, comments, contact-form-7
+Tags: captcha, spam, login, comments, antispam
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 7.4
@@ -94,10 +94,25 @@ No. The check is a browser-side proof of work, so it only runs on real form subm
 
 This version targets single-site installs. Network signup through wp-signup.php is not covered yet.
 
+== External services ==
+
+This plugin connects to captchaapi.eu, a third-party CAPTCHA service, to protect your forms from spam. It is required for the plugin to function.
+
+On any public page that contains a protected form, the plugin loads the service's widget script (captcha.js) from your configured captchaapi.eu endpoint. The visitor's browser then communicates with the captchaapi.eu API to perform a proof-of-work challenge and obtain a signed attestation that is attached to the form on submit. This happens for every visitor who loads a protected form.
+
+The data sent to the service is limited to what is needed to issue and validate an attestation (your public site key and the proof-of-work result). The service sets no cookies and stores no visitor identifiers. Data is processed on servers in the EU (Nuremberg, Germany).
+
+Verification of the attestation on submit is performed locally on your server with your secret key; no request is sent back to captchaapi.eu at that point.
+
+* Service provider: captchaapi.eu
+* Terms of Service: https://captchaapi.eu/legal/terms
+* Privacy Policy: https://captchaapi.eu/legal/privacy
+
 == Changelog ==
 
 = 1.0.1 =
 * Compatibility and Plugin Check fixes for the WordPress.org directory: updated "Tested up to", aligned the plugin name with the readme, versioned the enqueued widget script, prefixed an uninstall global, and dropped the redundant load_plugin_textdomain() call.
+* Documented the captchaapi.eu external service in the readme, including the data sent and links to the Terms of Service and Privacy Policy.
 
 = 1.0.0 =
 * First release. Protects login, registration, lost password, comments, and Contact Form 7.
