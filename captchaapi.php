@@ -1,9 +1,9 @@
 <?php
 /**
- * Plugin Name:       captchaapi.eu
+ * Plugin Name:       captchaapi.eu Proof-of-Work CAPTCHA
  * Plugin URI:        https://captchaapi.eu/docs
  * Description:       Privacy-first proof-of-work CAPTCHA. Protects the login, registration, lost-password, and comment forms, plus Contact Form 7. EU-hosted, no cookies, no tracking.
- * Version:           1.0.0
+ * Version:           1.0.1
  * Requires at least: 6.0
  * Requires PHP:      7.4
  * Author:            captchaapi.eu
@@ -18,7 +18,7 @@ if (! defined('ABSPATH')) {
     exit;
 }
 
-define('CAPTCHAAPI_VERSION', '1.0.0');
+define('CAPTCHAAPI_VERSION', '1.0.1');
 define('CAPTCHAAPI_PLUGIN_FILE', __FILE__);
 define('CAPTCHAAPI_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('CAPTCHAAPI_PLUGIN_URL', plugin_dir_url(__FILE__));

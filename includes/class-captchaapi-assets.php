@@ -108,7 +108,7 @@ class Captchaapi_Assets
         }
 
         if (! wp_script_is('captchaapi', 'registered')) {
-            wp_register_script('captchaapi', $this->options->widget_url(), $deps, null, $in_footer);
+            wp_register_script('captchaapi', $this->options->widget_url(), $deps, CAPTCHAAPI_VERSION, $in_footer);
             wp_add_inline_script('captchaapi', $this->config_script(), 'before');
         }
 

@@ -20,12 +20,6 @@ class Captchaapi_Plugin
 
     public function boot(): void
     {
-        load_plugin_textdomain(
-            'captchaapi',
-            false,
-            dirname(plugin_basename(CAPTCHAAPI_PLUGIN_FILE)) . '/languages'
-        );
-
         add_action(Captchaapi_Replay_Store::PURGE_HOOK, [$this, 'purge_expired']);
 
         (new Captchaapi_Settings($this->options))->boot();

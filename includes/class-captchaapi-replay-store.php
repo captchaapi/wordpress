@@ -53,7 +53,9 @@ class Captchaapi_Replay_Store
 
         // INSERT IGNORE returns 1 when the row is new and 0 when the primary key
         // already exists, so a duplicate jti (a replay) is rejected atomically.
-        $inserted = $wpdb->query(
+        // A direct, uncached query is required: replay detection must hit the
+        // backing store on every call, and caching would defeat single-use.
+        $inserted = $wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
             $wpdb->prepare(
                 "INSERT IGNORE INTO {$table} (jti, expires_at) VALUES (%s, %d)", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
                 $jti,
@@ -70,7 +72,8 @@ class Captchaapi_Replay_Store
 
         $table = $wpdb->prefix . self::TABLE;
 
-        $wpdb->query(
+        // Scheduled sweep of expired rows; a direct, uncached write by design.
+        $wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
             $wpdb->prepare(
                 "DELETE FROM {$table} WHERE expires_at < %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
                 time()

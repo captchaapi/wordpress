@@ -10,7 +10,7 @@ delete_option('captchaapi_options');
 
 Captchaapi_Replay_Store::drop_table();
 
-$timestamp = wp_next_scheduled(Captchaapi_Replay_Store::PURGE_HOOK);
-if ($timestamp) {
-    wp_unschedule_event($timestamp, Captchaapi_Replay_Store::PURGE_HOOK);
+$captchaapi_timestamp = wp_next_scheduled(Captchaapi_Replay_Store::PURGE_HOOK);
+if ($captchaapi_timestamp) {
+    wp_unschedule_event($captchaapi_timestamp, Captchaapi_Replay_Store::PURGE_HOOK);
 }

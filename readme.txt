@@ -2,9 +2,9 @@
 Contributors: captchaapi
 Tags: captcha, spam, login, comments, contact-form-7
 Requires at least: 6.0
-Tested up to: 6.8
+Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.0.0
+Stable tag: 1.0.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -95,6 +95,9 @@ No. The check is a browser-side proof of work, so it only runs on real form subm
 This version targets single-site installs. Network signup through wp-signup.php is not covered yet.
 
 == Changelog ==
+
+= 1.0.1 =
+* Compatibility and Plugin Check fixes for the WordPress.org directory: updated "Tested up to", aligned the plugin name with the readme, versioned the enqueued widget script, prefixed an uninstall global, and dropped the redundant load_plugin_textdomain() call.
 
 = 1.0.0 =
 * First release. Protects login, registration, lost password, comments, and Contact Form 7.
