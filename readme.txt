@@ -16,7 +16,7 @@ captchaapi.eu stops form spam without making your visitors click traffic lights.
 
 Your server checks that token locally with your secret key. No request is sent back to captchaapi.eu when a form is submitted, so the check adds no network latency and keeps working even if our service is briefly unreachable.
 
-The service runs on hardware in the EU (Nuremberg, Germany). It sets no cookies and stores no visitor identifiers.
+The service runs on hardware in the EU (Nuremberg, Germany). It sets no cookies and writes no per-visitor record to a database; the visitor's IP address is used only transiently for rate limiting and abuse detection.
 
 = What it protects =
 
@@ -76,7 +76,7 @@ Yes. Enable Contact Form 7 in the settings. The plugin acquires an attestation b
 
 = Do you set cookies or track visitors? =
 
-No cookies, no tracking, no third-party requests beyond the widget talking to the API.
+No cookies, no profiling, and no third-party requests beyond the widget talking to the API. The visitor's IP address is used only transiently for rate limiting and abuse/bot detection; it is not stored in a database and is not used to build a visitor profile.
 
 = Where is the data processed? =
 
@@ -100,7 +100,7 @@ This plugin connects to captchaapi.eu, a third-party CAPTCHA service, to protect
 
 On any public page that contains a protected form, the plugin loads the service's widget script (captcha.js) from your configured captchaapi.eu endpoint. The visitor's browser then communicates with the captchaapi.eu API to perform a proof-of-work challenge and obtain a signed attestation that is attached to the form on submit. This happens for every visitor who loads a protected form.
 
-The data sent to the service is limited to what is needed to issue and validate an attestation (your public site key and the proof-of-work result). The service sets no cookies and stores no visitor identifiers. Data is processed on servers in the EU (Nuremberg, Germany).
+To issue and validate an attestation the service receives your public site key, the proof-of-work result, and - as with any HTTP request - the visitor's IP address. The IP address is used for rate limiting and abuse/bot detection (including a coarse, IP-derived country) and is processed transiently: a hashed form and aggregate counters are held briefly in a cache. No raw IP address and no per-visitor record are written to a database. The service sets no cookies. Data is processed on servers in the EU (Nuremberg, Germany).
 
 Verification of the attestation on submit is performed locally on your server with your secret key; no request is sent back to captchaapi.eu at that point.
 
