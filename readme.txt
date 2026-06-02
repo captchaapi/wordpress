@@ -8,7 +8,7 @@ Stable tag: 1.0.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Proof-of-work CAPTCHA with no puzzles, no cookies, and no tracking. Protects your login, registration, comment, and Contact Form 7 submissions.
+Proof-of-work CAPTCHA with no puzzles and no cookies. Protects login, registration, comments, and Contact Form 7; IP used only for abuse checks.
 
 == Description ==
 
