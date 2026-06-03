@@ -1,5 +1,5 @@
 === captchaapi.eu Proof-of-Work CAPTCHA ===
-Contributors: captchaapi
+Contributors: rajtik
 Tags: captcha, spam, login, comments, antispam
 Requires at least: 6.0
 Tested up to: 7.0
