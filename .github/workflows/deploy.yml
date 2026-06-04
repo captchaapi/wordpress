@@ -1,0 +1,45 @@
+name: Deploy to WordPress.org
+
+# Runs when a GitHub release is published. The release tag (e.g. 1.0.2, with an
+# optional leading "v") is the version that gets deployed to the WordPress.org
+# SVN repo (trunk + tags/<version>) and attached to the release as a zip.
+on:
+  release:
+    types: [published]
+
+jobs:
+  deploy:
+    name: Build zip and deploy to WordPress.org
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Derive version and guard against mismatches
+        run: |
+          # Strip an optional leading "v" so git tag "v1.0.2" maps to SVN "1.0.2".
+          VERSION="${GITHUB_REF_NAME#v}"
+          STABLE=$(grep -i '^Stable tag:' readme.txt | sed 's/.*:[[:space:]]*//' | tr -d '\r')
+          HEADER=$(grep -i 'Version:' captchaapi.php | head -1 | sed 's/.*:[[:space:]]*//' | tr -d '\r')
+          echo "tag=$VERSION  Stable tag=$STABLE  header Version=$HEADER"
+          if [ "$VERSION" != "$STABLE" ] || [ "$VERSION" != "$HEADER" ]; then
+            echo "::error::Version mismatch - the release tag, readme \"Stable tag\" and the plugin header \"Version\" must all be $VERSION before deploying."
+            exit 1
+          fi
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+
+      - name: WordPress.org deploy
+        id: deploy
+        uses: 10up/action-wordpress-plugin-deploy@stable
+        with:
+          generate-zip: true
+        env:
+          SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
+          SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
+          SLUG: captchaapi
+          VERSION: ${{ env.VERSION }}
+
+      - name: Attach the zip to the GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ steps.deploy.outputs.zip-path }}
