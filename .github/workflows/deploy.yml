@@ -3,9 +3,18 @@ name: Deploy to WordPress.org
 # Runs when a GitHub release is published. The release tag (e.g. 1.0.2, with an
 # optional leading "v") is the version that gets deployed to the WordPress.org
 # SVN repo (trunk + tags/<version>) and attached to the release as a zip.
+#
+# Can also be triggered manually (workflow_dispatch) to dry-run the deploy
+# without committing anything to SVN - useful for smoke-testing the setup.
 on:
   release:
     types: [published]
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Dry run (assemble + zip, but do NOT commit to SVN)"
+        type: boolean
+        default: true
 
 jobs:
   deploy:
@@ -17,13 +26,18 @@ jobs:
 
       - name: Derive version and guard against mismatches
         run: |
-          # Strip an optional leading "v" so git tag "v1.0.2" maps to SVN "1.0.2".
-          VERSION="${GITHUB_REF_NAME#v}"
+          if [ "$GITHUB_EVENT_NAME" = "release" ]; then
+            # Strip an optional leading "v" so git tag "v1.0.2" maps to SVN "1.0.2".
+            VERSION="${GITHUB_REF_NAME#v}"
+          else
+            # Manual dry-run: there is no release tag, so use the readme version.
+            VERSION=$(grep -i '^Stable tag:' readme.txt | sed 's/.*:[[:space:]]*//' | tr -d '\r')
+          fi
           STABLE=$(grep -i '^Stable tag:' readme.txt | sed 's/.*:[[:space:]]*//' | tr -d '\r')
           HEADER=$(grep -i 'Version:' captchaapi.php | head -1 | sed 's/.*:[[:space:]]*//' | tr -d '\r')
-          echo "tag=$VERSION  Stable tag=$STABLE  header Version=$HEADER"
+          echo "version=$VERSION  Stable tag=$STABLE  header Version=$HEADER"
           if [ "$VERSION" != "$STABLE" ] || [ "$VERSION" != "$HEADER" ]; then
-            echo "::error::Version mismatch - the release tag, readme \"Stable tag\" and the plugin header \"Version\" must all be $VERSION before deploying."
+            echo "::error::Version mismatch - the version, readme \"Stable tag\" and the plugin header \"Version\" must all match before deploying."
             exit 1
           fi
           echo "VERSION=$VERSION" >> "$GITHUB_ENV"
@@ -33,6 +47,7 @@ jobs:
         uses: 10up/action-wordpress-plugin-deploy@stable
         with:
           generate-zip: true
+          dry-run: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || false }}
         env:
           SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
           SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
@@ -40,6 +55,7 @@ jobs:
           VERSION: ${{ env.VERSION }}
 
       - name: Attach the zip to the GitHub release
+        if: github.event_name == 'release'
         uses: softprops/action-gh-release@v2
         with:
           files: ${{ steps.deploy.outputs.zip-path }}
