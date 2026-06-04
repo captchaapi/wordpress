@@ -4,5 +4,6 @@
 .github
 .gitignore
 .idea
+.wordpress-org
 .distignore
 README.md
