@@ -4,7 +4,7 @@ Tags: captcha, recaptcha, gdpr, antispam, woocommerce
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.1.1
+Stable tag: 1.1.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -120,6 +120,9 @@ Verification of the attestation on submit is performed locally on your server wi
 * Privacy Policy: https://captchaapi.eu/legal/privacy
 
 == Changelog ==
+
+= 1.1.2 =
+* Refreshed the plugin icon and directory banner with the new captchaapi.eu branding.
 
 = 1.1.1 =
 * Clearer directory listing: updated title, tags, and description to highlight the cookieless, EU-hosted protection and the supported form plugins.
