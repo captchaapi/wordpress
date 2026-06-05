@@ -59,13 +59,15 @@ class Captchaapi_Fluent_Forms
      */
     private function posted_attestation(): string
     {
-        // phpcs:disable WordPress.Security.NonceVerification.Missing
+        // The attestation is its own HMAC proof, so it needs no nonce, and the
+        // value pulled out of the parsed string is sanitized before use.
+        // phpcs:disable WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
         if (empty($_POST['data'])) {
             return '';
         }
 
         parse_str(wp_unslash($_POST['data']), $parsed);
-        // phpcs:enable WordPress.Security.NonceVerification.Missing
+        // phpcs:enable WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 
         return isset($parsed['captcha_attestation']) ? sanitize_text_field((string) $parsed['captcha_attestation']) : '';
     }

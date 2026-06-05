@@ -8,3 +8,4 @@
 .distignore
 README.md
 languages/.build
+.DS_Store
