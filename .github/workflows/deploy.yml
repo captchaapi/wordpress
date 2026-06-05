@@ -16,6 +16,10 @@ on:
         type: boolean
         default: true
 
+# Needed to attach the built zip to the GitHub release.
+permissions:
+  contents: write
+
 jobs:
   deploy:
     name: Build zip and deploy to WordPress.org
