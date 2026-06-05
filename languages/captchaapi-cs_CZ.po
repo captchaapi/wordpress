@@ -1,0 +1,195 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: captchaapi 1.1.0\n"
+"Report-Msgid-Bugs-To: https://captchaapi.eu\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: cs_CZ\n"
+"Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
+
+msgid "captchaapi.eu Proof-of-Work CAPTCHA"
+msgstr ""
+
+msgid "https://captchaapi.eu/docs"
+msgstr ""
+
+msgid "Privacy-first proof-of-work CAPTCHA. Protects the login, registration, lost-password, and comment forms, plus Contact Form 7. EU-hosted, no cookies, no tracking."
+msgstr "CAPTCHA založená na proof-of-work, která chrání soukromí. Zabezpečí přihlášení, registraci, obnovu hesla a komentáře, plus Contact Form 7. Hostováno v EU, bez cookies, bez sledování."
+
+msgid "captchaapi.eu"
+msgstr ""
+
+msgid "https://captchaapi.eu"
+msgstr ""
+
+msgid "Verification is temporarily unavailable. Please try again."
+msgstr "Ověření je dočasně nedostupné. Zkuste to prosím znovu."
+
+msgid "Testing..."
+msgstr "Testuji..."
+
+msgid "Test failed."
+msgstr "Test selhal."
+
+msgid "Not allowed."
+msgstr "Nepovoleno."
+
+msgid "Add a site key and a secret key first."
+msgstr "Nejdřív zadejte site key a secret key."
+
+msgid "The keys look swapped: the site key should start with pk_ and the secret key with sk_."
+msgstr "Klíče vypadají prohozeně: site key má začínat na pk_ a secret key na sk_."
+
+msgid "Could not reach the service. Check the API base URL and that captchaapi.eu is up."
+msgstr "Službu se nepodařilo kontaktovat. Zkontrolujte API base URL a že captchaapi.eu běží."
+
+msgid "Connected. Your site key is valid."
+msgstr "Připojeno. Váš site key je platný."
+
+msgid "Site key not recognized. Check that you copied the site key correctly."
+msgstr "Site key nebyl rozpoznán. Zkontrolujte, že jste ho zkopírovali správně."
+
+msgid "The site key is valid, but this site's domain is not in the project's allowed domains."
+msgstr "Site key je platný, ale doména tohoto webu není mezi povolenými doménami projektu."
+
+msgid "The free tier limit for this billing period has been reached."
+msgstr "Byl vyčerpán limit free tieru pro toto zúčtovací období."
+
+msgid "The account is suspended over billing."
+msgstr "Účet je pozastavený kvůli platbě."
+
+msgid "The account is deactivated."
+msgstr "Účet je deaktivovaný."
+
+msgid "The project is inactive."
+msgstr "Projekt je neaktivní."
+
+msgid "Too many requests right now. The site key is valid; try again shortly."
+msgstr "Momentálně příliš mnoho požadavků. Site key je platný, zkuste to za chvíli."
+
+msgid "The service returned an unexpected response."
+msgstr "Služba vrátila neočekávanou odpověď."
+
+msgid "The service rejected the request (%s)."
+msgstr "Služba požadavek odmítla (%s)."
+
+msgid "Settings"
+msgstr "Nastavení"
+
+msgid "Get your free keys"
+msgstr "Získat klíče zdarma"
+
+msgid "Account keys"
+msgstr "Klíče účtu"
+
+msgid "Site key"
+msgstr ""
+
+msgid "The public site key from your project dashboard. Starts with pk_live_ and is safe to expose in the page."
+msgstr "Veřejný site key z dashboardu vašeho projektu. Začíná na pk_live_ a může být klidně viditelný ve stránce."
+
+msgid "Don't have one yet? %s."
+msgstr "Ještě ho nemáte? %s."
+
+msgid "Currently set by the CAPTCHAAPI_SITE_KEY constant in wp-config.php."
+msgstr "Aktuálně nastaveno konstantou CAPTCHAAPI_SITE_KEY v wp-config.php."
+
+msgid "Secret key"
+msgstr ""
+
+msgid "Set by the CAPTCHAAPI_SECRET_KEYS constant in wp-config.php. Clear the constant to manage it here."
+msgstr "Nastaveno konstantou CAPTCHAAPI_SECRET_KEYS v wp-config.php. Smažte konstantu, abyste klíč spravovali tady."
+
+msgid "Keep this secret."
+msgstr "Držte v tajnosti."
+
+msgid "It belongs on the server only. Never put it in templates, JavaScript, or any public code. Anyone who has it can forge verifications."
+msgstr "Patří jen na server. Nikdy ho nedávejte do šablon, JavaScriptu ani veřejného kódu. Kdokoli, kdo ho má, dokáže podvrhnout ověření."
+
+msgid "Starts with sk_live_. During a key rotation, enter both keys separated by a comma."
+msgstr "Začíná na sk_live_. Při výměně klíčů zadejte oba klíče oddělené čárkou."
+
+msgid "For a stricter setup, define CAPTCHAAPI_SECRET_KEYS in wp-config.php instead and leave this blank."
+msgstr "Pro přísnější nastavení radši definujte CAPTCHAAPI_SECRET_KEYS v wp-config.php a tohle pole nechte prázdné."
+
+msgid "Test connection"
+msgstr "Otestovat připojení"
+
+msgid "Checks that captchaapi.eu is reachable and your site key is valid. Save your keys first."
+msgstr "Ověří, že je captchaapi.eu dostupné a že je váš site key platný. Nejdřív klíče uložte."
+
+msgid "Protected forms"
+msgstr "Chráněné formuláře"
+
+msgid "Login"
+msgstr "Přihlášení"
+
+msgid "Registration"
+msgstr "Registrace"
+
+msgid "Lost password"
+msgstr "Obnova hesla"
+
+msgid "Comments"
+msgstr "Komentáře"
+
+msgid "Contact Form 7"
+msgstr ""
+
+msgid "WooCommerce checkout"
+msgstr "Pokladna WooCommerce"
+
+msgid "WPForms"
+msgstr ""
+
+msgid "Fluent Forms"
+msgstr ""
+
+msgid "Formidable Forms"
+msgstr ""
+
+msgid "Forminator"
+msgstr ""
+
+msgid "Gravity Forms"
+msgstr ""
+
+msgid "Elementor Pro Forms"
+msgstr ""
+
+msgid "WooCommerce login, registration, and lost-password forms follow the matching options above."
+msgstr "Formuláře přihlášení, registrace a obnovy hesla ve WooCommerce se řídí odpovídajícími volbami výše."
+
+msgid "Behavior"
+msgstr "Chování"
+
+msgid "Failsafe mode"
+msgstr "Failsafe režim"
+
+msgid "Let submissions through when captchaapi.eu is unreachable"
+msgstr "Při nedostupnosti captchaapi.eu neblokuje odeslané formuláře"
+
+msgid "During an outage the widget cannot produce an attestation, so strict mode would block every form. With this on, forms stay usable and protection resumes automatically once the service is back. Leave off for strict, fail-closed protection."
+msgstr "Během výpadku nedokáže widget vytvořit atestaci, takže přísný režim by zablokoval každý formulář. Když je tohle zapnuté, formuláře zůstanou funkční a ochrana se sama obnoví, jakmile služba naběhne. Pro přísnou ochranu, která při potížích blokuje, nechte vypnuté."
+
+msgid "Advanced"
+msgstr "Pokročilé"
+
+msgid "API base URL"
+msgstr ""
+
+msgid "Leave as the default unless you self-host or proxy the API."
+msgstr "Ponechte výchozí, pokud API nehostujete sami nebo přes proxy."
+
+msgid "Keys are set. Your selected forms are protected."
+msgstr "Klíče jsou nastavené. Vybrané formuláře jsou chráněné."
+
+msgid "No keys yet, so no forms are protected. Create a free account to get your site key and secret key, then paste them in below."
+msgstr "Zatím žádné klíče, takže nic není chráněné. Založte si zdarma účet, získejte site key a secret key a vložte je níže."
+
+msgid "Comment blocked"
+msgstr "Komentář zablokován"
+
+msgid "Captcha verification failed. Reload the page and try again."
+msgstr "Ověření captchou selhalo. Načtěte stránku znovu a zkuste to."

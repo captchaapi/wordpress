@@ -6,3 +6,32 @@
 .captchaapi-settings .form-table fieldset label {
     line-height: 1.8;
 }
+
+.captchaapi-settings .captchaapi-secret-warning {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    margin: 0.6em 0 0;
+    padding: 8px 12px;
+    max-width: 40em;
+    border-left: 4px solid #d63638;
+    background: #fcf0f1;
+}
+
+.captchaapi-settings .captchaapi-secret-warning .dashicons-warning {
+    color: #d63638;
+    flex: 0 0 auto;
+}
+
+.captchaapi-settings .captchaapi-test-result {
+    margin-left: 10px;
+    font-weight: 600;
+}
+
+.captchaapi-settings .captchaapi-test-result.is-ok {
+    color: #008a20;
+}
+
+.captchaapi-settings .captchaapi-test-result.is-error {
+    color: #d63638;
+}

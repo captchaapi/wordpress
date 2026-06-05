@@ -44,6 +44,14 @@ class Captchaapi_Options
             'protect_lost_password' => true,
             'protect_comments'      => true,
             'protect_cf7'           => true,
+            'protect_woo_checkout'  => true,
+            'protect_wpforms'       => true,
+            'protect_fluentform'    => true,
+            'protect_formidable'    => true,
+            'protect_forminator'    => true,
+            'protect_gravityforms'  => true,
+            'protect_elementor_forms' => true,
+            'failsafe'              => false,
         ];
     }
 
@@ -105,6 +113,11 @@ class Captchaapi_Options
     public function is_configured(): bool
     {
         return $this->site_key() !== '' && $this->secret_keys() !== [];
+    }
+
+    public function failsafe(): bool
+    {
+        return ! empty($this->all()['failsafe']);
     }
 
     public function protects(string $surface): bool

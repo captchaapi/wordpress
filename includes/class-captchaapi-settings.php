@@ -27,6 +27,7 @@ class Captchaapi_Settings
         add_action('admin_menu', [$this, 'add_page']);
         add_action('admin_init', [$this, 'register']);
         add_action('admin_enqueue_scripts', [$this, 'enqueue_admin']);
+        add_action('wp_ajax_captchaapi_test', [$this, 'ajax_test']);
         add_filter(
             'plugin_action_links_' . plugin_basename(CAPTCHAAPI_PLUGIN_FILE),
             [$this, 'action_links']
@@ -48,6 +49,112 @@ class Captchaapi_Settings
             [],
             CAPTCHAAPI_VERSION
         );
+
+        wp_enqueue_script(
+            'captchaapi-admin',
+            CAPTCHAAPI_PLUGIN_URL . 'assets/js/captchaapi-admin.js',
+            [],
+            CAPTCHAAPI_VERSION,
+            true
+        );
+        wp_add_inline_script(
+            'captchaapi-admin',
+            'window.captchaapiAdmin = ' . wp_json_encode([
+                'ajaxUrl' => admin_url('admin-ajax.php'),
+                'nonce'   => wp_create_nonce('captchaapi_test'),
+                'testing' => __('Testing...', 'captchaapi'),
+                'failure' => __('Test failed.', 'captchaapi'),
+            ]) . ';',
+            'before'
+        );
+    }
+
+    public function ajax_test(): void
+    {
+        check_ajax_referer('captchaapi_test', 'nonce');
+
+        if (! current_user_can('manage_options')) {
+            wp_send_json_error(['message' => __('Not allowed.', 'captchaapi')], 403);
+        }
+
+        $site_key    = $this->options->site_key();
+        $secret_keys = $this->options->secret_keys();
+
+        if ($site_key === '' || $secret_keys === []) {
+            wp_send_json_error(['message' => __('Add a site key and a secret key first.', 'captchaapi')]);
+        }
+
+        // The secret key signs and verifies attestations with the same key, so a
+        // wrong secret cannot be caught locally. The most that helps here is
+        // spotting keys pasted into the wrong field.
+        if (strpos($site_key, 'sk_') === 0 || strpos($secret_keys[0], 'pk_') === 0) {
+            wp_send_json_error(['message' => __('The keys look swapped: the site key should start with pk_ and the secret key with sk_.', 'captchaapi')]);
+        }
+
+        // Ask the service for a challenge with this site key. An unknown key is
+        // rejected with invalid_site_key before any other check, so this is what
+        // actually proves the site key is real. The Origin header carries this
+        // site's domain so a project with a domain allowlist validates the same
+        // way it would for a real browser request.
+        $response = wp_remote_post($this->options->api_url() . '/captcha/challenge', [
+            'timeout' => 8,
+            'headers' => [
+                'Content-Type' => 'application/json',
+                'Origin'       => $this->site_origin(),
+            ],
+            'body'    => wp_json_encode(['site_key' => $site_key]),
+        ]);
+
+        if (is_wp_error($response)) {
+            wp_send_json_error(['message' => __('Could not reach the service. Check the API base URL and that captchaapi.eu is up.', 'captchaapi')]);
+        }
+
+        if ((int) wp_remote_retrieve_response_code($response) === 200) {
+            wp_send_json_success(['message' => __('Connected. Your site key is valid.', 'captchaapi')]);
+        }
+
+        $body       = json_decode((string) wp_remote_retrieve_body($response), true);
+        $error_code = (is_array($body) && isset($body['error_code'])) ? (string) $body['error_code'] : '';
+
+        wp_send_json_error(['message' => $this->test_error_message($error_code)]);
+    }
+
+    private function site_origin(): string
+    {
+        $parts = wp_parse_url(home_url());
+
+        if (! is_array($parts) || empty($parts['host'])) {
+            return home_url();
+        }
+
+        $origin = (isset($parts['scheme']) ? $parts['scheme'] : 'https') . '://' . $parts['host'];
+
+        return isset($parts['port']) ? $origin . ':' . $parts['port'] : $origin;
+    }
+
+    private function test_error_message(string $error_code): string
+    {
+        switch ($error_code) {
+            case 'invalid_site_key':
+                return __('Site key not recognized. Check that you copied the site key correctly.', 'captchaapi');
+            case 'domain_not_allowed':
+                return __('The site key is valid, but this site\'s domain is not in the project\'s allowed domains.', 'captchaapi');
+            case 'free_tier_limit_reached':
+                return __('The free tier limit for this billing period has been reached.', 'captchaapi');
+            case 'account_suspended':
+                return __('The account is suspended over billing.', 'captchaapi');
+            case 'account_deactivated':
+                return __('The account is deactivated.', 'captchaapi');
+            case 'project_inactive':
+                return __('The project is inactive.', 'captchaapi');
+            case 'rate_limited':
+                return __('Too many requests right now. The site key is valid; try again shortly.', 'captchaapi');
+            case '':
+                return __('The service returned an unexpected response.', 'captchaapi');
+            default:
+                /* translators: %s: error code returned by the service. */
+                return sprintf(__('The service rejected the request (%s).', 'captchaapi'), $error_code);
+        }
     }
 
     public function add_page(): void
@@ -98,9 +205,17 @@ class Captchaapi_Settings
             $output['base_url'] = $base !== '' ? untrailingslashit($base) : Captchaapi_Options::DEFAULT_BASE_URL;
         }
 
-        foreach (['protect_login', 'protect_register', 'protect_lost_password', 'protect_comments', 'protect_cf7'] as $toggle) {
+        $toggles = [
+            'protect_login', 'protect_register', 'protect_lost_password', 'protect_comments',
+            'protect_cf7', 'protect_woo_checkout', 'protect_wpforms', 'protect_fluentform',
+            'protect_formidable', 'protect_forminator', 'protect_gravityforms', 'protect_elementor_forms',
+        ];
+
+        foreach ($toggles as $toggle) {
             $output[$toggle] = ! empty($input[$toggle]);
         }
+
+        $output['failsafe'] = ! empty($input['failsafe']);
 
         return $output;
     }
@@ -119,6 +234,14 @@ class Captchaapi_Settings
         );
 
         array_unshift($links, $settings);
+
+        if (! $this->options->is_configured()) {
+            array_unshift($links, sprintf(
+                '<a href="%s" target="_blank" rel="noopener noreferrer" style="color:#d63638;font-weight:600;">%s</a>',
+                esc_url($this->signup_url()),
+                esc_html__('Get your free keys', 'captchaapi')
+            ));
+        }
 
         return $links;
     }
@@ -141,6 +264,7 @@ class Captchaapi_Settings
             <form method="post" action="options.php">
                 <?php settings_fields(self::GROUP); ?>
 
+                <h2 class="title"><?php esc_html_e('Account keys', 'captchaapi'); ?></h2>
                 <table class="form-table" role="presentation">
                     <tr>
                         <th scope="row"><label for="captchaapi-site-key"><?php esc_html_e('Site key', 'captchaapi'); ?></label></th>
@@ -148,9 +272,17 @@ class Captchaapi_Settings
                             <input type="text" id="captchaapi-site-key" class="regular-text"
                                 name="<?php echo esc_attr($name); ?>[site_key]"
                                 value="<?php echo esc_attr($this->options->site_key()); ?>"
+                                placeholder="pk_live_..."
                                 <?php disabled(defined('CAPTCHAAPI_SITE_KEY') && CAPTCHAAPI_SITE_KEY); ?>>
                             <p class="description">
-                                <?php esc_html_e('The public site key from your project dashboard. Safe to expose in the page.', 'captchaapi'); ?>
+                                <?php esc_html_e('The public site key from your project dashboard. Starts with pk_live_ and is safe to expose in the page.', 'captchaapi'); ?>
+                                <?php
+                                printf(
+                                    /* translators: %s: link to create a free account. */
+                                    ' ' . esc_html__('Don\'t have one yet? %s.', 'captchaapi'),
+                                    '<a href="' . esc_url($this->signup_url()) . '" target="_blank" rel="noopener noreferrer">' . esc_html__('Get your free keys', 'captchaapi') . '</a>'
+                                );
+                                ?>
                                 <?php if (defined('CAPTCHAAPI_SITE_KEY') && CAPTCHAAPI_SITE_KEY) : ?>
                                     <br><?php esc_html_e('Currently set by the CAPTCHAAPI_SITE_KEY constant in wp-config.php.', 'captchaapi'); ?>
                                 <?php endif; ?>
@@ -168,16 +300,36 @@ class Captchaapi_Settings
                                 <input type="password" id="captchaapi-secret-key" class="regular-text"
                                     name="<?php echo esc_attr($name); ?>[secret_key]"
                                     value="<?php echo esc_attr((string) $values['secret_key']); ?>"
+                                    placeholder="sk_live_..."
                                     autocomplete="new-password">
+                                <p class="captchaapi-secret-warning">
+                                    <span class="dashicons dashicons-warning" aria-hidden="true"></span>
+                                    <strong><?php esc_html_e('Keep this secret.', 'captchaapi'); ?></strong>
+                                    <?php esc_html_e('It belongs on the server only. Never put it in templates, JavaScript, or any public code. Anyone who has it can forge verifications.', 'captchaapi'); ?>
+                                </p>
                                 <p class="description">
-                                    <?php esc_html_e('The private secret key. During a key rotation, enter both keys separated by a comma.', 'captchaapi'); ?>
+                                    <?php esc_html_e('Starts with sk_live_. During a key rotation, enter both keys separated by a comma.', 'captchaapi'); ?>
                                     <br><?php esc_html_e('For a stricter setup, define CAPTCHAAPI_SECRET_KEYS in wp-config.php instead and leave this blank.', 'captchaapi'); ?>
                                 </p>
                             <?php endif; ?>
                         </td>
                     </tr>
                     <tr>
-                        <th scope="row"><?php esc_html_e('Protected forms', 'captchaapi'); ?></th>
+                        <th scope="row"><?php esc_html_e('Test connection', 'captchaapi'); ?></th>
+                        <td>
+                            <button type="button" class="button" id="captchaapi-test"><?php esc_html_e('Test connection', 'captchaapi'); ?></button>
+                            <span id="captchaapi-test-result" class="captchaapi-test-result" role="status" aria-live="polite"></span>
+                            <p class="description">
+                                <?php esc_html_e('Checks that captchaapi.eu is reachable and your site key is valid. Save your keys first.', 'captchaapi'); ?>
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+
+                <h2 class="title"><?php esc_html_e('Protected forms', 'captchaapi'); ?></h2>
+                <table class="form-table" role="presentation">
+                    <tr>
+                        <th scope="row"><span class="screen-reader-text"><?php esc_html_e('Protected forms', 'captchaapi'); ?></span></th>
                         <td>
                             <fieldset>
                                 <?php
@@ -189,10 +341,60 @@ class Captchaapi_Settings
                                 if (Captchaapi_Contact_Form_7::is_active()) {
                                     $this->checkbox($name, 'protect_cf7', __('Contact Form 7', 'captchaapi'), ! empty($values['protect_cf7']));
                                 }
+
+                                if (Captchaapi_WooCommerce::is_active()) {
+                                    $this->checkbox($name, 'protect_woo_checkout', __('WooCommerce checkout', 'captchaapi'), ! empty($values['protect_woo_checkout']));
+                                }
+
+                                if (Captchaapi_WPForms::is_active()) {
+                                    $this->checkbox($name, 'protect_wpforms', __('WPForms', 'captchaapi'), ! empty($values['protect_wpforms']));
+                                }
+                                if (Captchaapi_Fluent_Forms::is_active()) {
+                                    $this->checkbox($name, 'protect_fluentform', __('Fluent Forms', 'captchaapi'), ! empty($values['protect_fluentform']));
+                                }
+                                if (Captchaapi_Formidable::is_active()) {
+                                    $this->checkbox($name, 'protect_formidable', __('Formidable Forms', 'captchaapi'), ! empty($values['protect_formidable']));
+                                }
+                                if (Captchaapi_Forminator::is_active()) {
+                                    $this->checkbox($name, 'protect_forminator', __('Forminator', 'captchaapi'), ! empty($values['protect_forminator']));
+                                }
+                                if (Captchaapi_Gravity_Forms::is_active()) {
+                                    $this->checkbox($name, 'protect_gravityforms', __('Gravity Forms', 'captchaapi'), ! empty($values['protect_gravityforms']));
+                                }
+                                if (Captchaapi_Elementor_Forms::is_active()) {
+                                    $this->checkbox($name, 'protect_elementor_forms', __('Elementor Pro Forms', 'captchaapi'), ! empty($values['protect_elementor_forms']));
+                                }
                                 ?>
+                                <?php if (Captchaapi_WooCommerce::is_active()) : ?>
+                                    <p class="description">
+                                        <?php esc_html_e('WooCommerce login, registration, and lost-password forms follow the matching options above.', 'captchaapi'); ?>
+                                    </p>
+                                <?php endif; ?>
                             </fieldset>
                         </td>
                     </tr>
+                </table>
+
+                <h2 class="title"><?php esc_html_e('Behavior', 'captchaapi'); ?></h2>
+                <table class="form-table" role="presentation">
+                    <tr>
+                        <th scope="row"><?php esc_html_e('Failsafe mode', 'captchaapi'); ?></th>
+                        <td>
+                            <fieldset>
+                                <label>
+                                    <input type="checkbox" name="<?php echo esc_attr($name); ?>[failsafe]" value="1" <?php checked(! empty($values['failsafe'])); ?>>
+                                    <?php esc_html_e('Let submissions through when captchaapi.eu is unreachable', 'captchaapi'); ?>
+                                </label>
+                                <p class="description">
+                                    <?php esc_html_e('During an outage the widget cannot produce an attestation, so strict mode would block every form. With this on, forms stay usable and protection resumes automatically once the service is back. Leave off for strict, fail-closed protection.', 'captchaapi'); ?>
+                                </p>
+                            </fieldset>
+                        </td>
+                    </tr>
+                </table>
+
+                <h2 class="title"><?php esc_html_e('Advanced', 'captchaapi'); ?></h2>
+                <table class="form-table" role="presentation">
                     <tr>
                         <th scope="row"><label for="captchaapi-base-url"><?php esc_html_e('API base URL', 'captchaapi'); ?></label></th>
                         <td>
@@ -216,18 +418,33 @@ class Captchaapi_Settings
     private function render_status(): void
     {
         if ($this->options->is_configured()) {
-            $class   = 'notice notice-success inline';
-            $message = __('Keys are set. Your selected forms are protected.', 'captchaapi');
-        } else {
-            $class   = 'notice notice-warning inline';
-            $message = __('Add a site key and a secret key to start protecting forms.', 'captchaapi');
+            printf(
+                '<div class="notice notice-success inline captchaapi-status"><p>%s</p></div>',
+                esc_html__('Keys are set. Your selected forms are protected.', 'captchaapi')
+            );
+
+            return;
         }
 
         printf(
-            '<div class="%1$s captchaapi-status"><p>%2$s</p></div>',
-            esc_attr($class),
-            esc_html($message)
+            '<div class="notice notice-warning inline captchaapi-status">'
+                . '<p>%1$s</p>'
+                . '<p><a class="button button-primary" href="%2$s" target="_blank" rel="noopener noreferrer">%3$s</a></p>'
+                . '</div>',
+            esc_html__('No keys yet, so no forms are protected. Create a free account to get your site key and secret key, then paste them in below.', 'captchaapi'),
+            esc_url($this->signup_url()),
+            esc_html__('Get your free keys', 'captchaapi')
         );
+    }
+
+    /**
+     * Where a new user creates an account and generates keys. Built from the
+     * canonical host rather than the configurable API base URL, so a self-hosted
+     * proxy entered in that field never sends new users to a page that does not exist.
+     */
+    private function signup_url(): string
+    {
+        return Captchaapi_Options::DEFAULT_BASE_URL . '/register';
     }
 
     private function checkbox(string $name, string $key, string $label, bool $checked): void

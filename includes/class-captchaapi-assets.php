@@ -68,13 +68,66 @@ class Captchaapi_Assets
             $forms[] = ['selector' => '#commentform'];
         }
 
+        if (Captchaapi_WooCommerce::is_active() && function_exists('is_account_page') && is_account_page()) {
+            if ($this->options->protects('login')) {
+                $forms[] = ['selector' => '.woocommerce-form-login'];
+            }
+            if ($this->options->protects('register')) {
+                $forms[] = ['selector' => '.woocommerce-form-register'];
+            }
+            if ($this->options->protects('lost_password')) {
+                $forms[] = ['selector' => '.woocommerce-ResetPassword'];
+            }
+        }
+
         $needs_cf7 = $this->options->protects('cf7') && Captchaapi_Contact_Form_7::is_active();
 
-        if ($forms === [] && ! $needs_cf7) {
+        $needs_woo_checkout = $this->options->protects('woo_checkout')
+            && Captchaapi_WooCommerce::is_active()
+            && function_exists('is_checkout') && is_checkout();
+
+        $ajax_selectors = $this->ajax_form_selectors();
+
+        if ($forms === [] && ! $needs_cf7 && ! $needs_woo_checkout && $ajax_selectors === []) {
             return;
         }
 
         $this->enqueue_widget($forms, false);
+
+        if ($ajax_selectors !== []) {
+            wp_enqueue_script(
+                'captchaapi-ajax',
+                CAPTCHAAPI_PLUGIN_URL . 'assets/js/captchaapi-ajax.js',
+                ['captchaapi'],
+                CAPTCHAAPI_VERSION,
+                true
+            );
+            wp_add_inline_script(
+                'captchaapi-ajax',
+                'window.captchaapiAjax = ' . wp_json_encode([
+                    'selectors'   => $ajax_selectors,
+                    'unavailable' => __('Verification is temporarily unavailable. Please try again.', 'captchaapi'),
+                ]) . ';',
+                'before'
+            );
+        }
+
+        if ($needs_woo_checkout) {
+            wp_enqueue_script(
+                'captchaapi-woocommerce',
+                CAPTCHAAPI_PLUGIN_URL . 'assets/js/captchaapi-woocommerce.js',
+                ['captchaapi'],
+                CAPTCHAAPI_VERSION,
+                true
+            );
+            wp_add_inline_script(
+                'captchaapi-woocommerce',
+                'window.captchaapiWoo = ' . wp_json_encode([
+                    'unavailable' => __('Verification is temporarily unavailable. Please try again.', 'captchaapi'),
+                ]) . ';',
+                'before'
+            );
+        }
 
         if ($needs_cf7) {
             wp_enqueue_script(
@@ -92,6 +145,34 @@ class Captchaapi_Assets
                 'before'
             );
         }
+    }
+
+    /**
+     * CSS selectors for the form plugins that submit over their own AJAX and are
+     * both active and enabled. The generic gate in captchaapi-ajax.js attaches an
+     * attestation to any form matching one of these.
+     *
+     * @return array<int, string>
+     */
+    private function ajax_form_selectors(): array
+    {
+        $integrations = [
+            ['toggle' => 'wpforms', 'class' => 'Captchaapi_WPForms', 'selector' => '.wpforms-form'],
+            ['toggle' => 'fluentform', 'class' => 'Captchaapi_Fluent_Forms', 'selector' => '.frm-fluent-form'],
+            ['toggle' => 'formidable', 'class' => 'Captchaapi_Formidable', 'selector' => '.frm-show-form'],
+            ['toggle' => 'forminator', 'class' => 'Captchaapi_Forminator', 'selector' => 'form.forminator-custom-form'],
+            ['toggle' => 'gravityforms', 'class' => 'Captchaapi_Gravity_Forms', 'selector' => '.gform_wrapper form'],
+            ['toggle' => 'elementor_forms', 'class' => 'Captchaapi_Elementor_Forms', 'selector' => '.elementor-form'],
+        ];
+
+        $selectors = [];
+        foreach ($integrations as $integration) {
+            if ($this->options->protects($integration['toggle']) && call_user_func([$integration['class'], 'is_active'])) {
+                $selectors[] = $integration['selector'];
+            }
+        }
+
+        return $selectors;
     }
 
     /**

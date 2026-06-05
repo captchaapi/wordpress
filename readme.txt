@@ -4,11 +4,11 @@ Tags: captcha, spam, login, comments, antispam
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.0.1
+Stable tag: 1.1.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Proof-of-work CAPTCHA with no puzzles and no cookies. Protects login, registration, comments, and Contact Form 7; IP used only for abuse checks.
+Proof-of-work CAPTCHA with no puzzles and no cookies. Protects login, registration, comments, WooCommerce, and popular form plugins.
 
 == Description ==
 
@@ -20,13 +20,18 @@ The service runs on hardware in the EU (Nuremberg, Germany). It sets no cookies 
 
 = What it protects =
 
-* Login (wp-login.php)
-* Registration
-* Lost password
+* Login (wp-login.php and WooCommerce)
+* Registration (WordPress and WooCommerce)
+* Lost password (WordPress and WooCommerce)
 * Comments
+* WooCommerce checkout
 * Contact Form 7
+* WPForms
+* Fluent Forms
+* Formidable Forms
+* Forminator
 
-Each surface can be turned on or off from the settings screen. Contact Form 7 support appears only when that plugin is active.
+Each surface can be turned on or off from the settings screen. Integration options for Contact Form 7, WooCommerce, and the supported form plugins appear only when that plugin is active.
 
 = How it works =
 
@@ -74,6 +79,10 @@ The widget will not produce an attestation, so a protected form will not submit.
 
 Yes. Enable Contact Form 7 in the settings. The plugin acquires an attestation before Contact Form 7 sends the form and verifies it on the server.
 
+= Which form plugins are supported? =
+
+WooCommerce, WPForms, Fluent Forms, Formidable Forms, and Forminator, in addition to Contact Form 7. Enable each from the settings screen; the option appears only when that plugin is active. The plugin attaches an attestation before the form is sent and verifies it on the server.
+
 = Do you set cookies or track visitors? =
 
 No cookies, no profiling, and no third-party requests beyond the widget talking to the API. The visitor's IP address is used only transiently for rate limiting and abuse/bot detection; it is not stored in a database and is not used to build a visitor profile.
@@ -84,7 +93,7 @@ On servers in the EU.
 
 = Which login forms are covered? =
 
-The standard WordPress login form at wp-login.php. WooCommerce and other custom login forms are not covered in this version.
+The standard WordPress login form at wp-login.php and the WooCommerce account login form. Other custom login forms are not covered in this version.
 
 = Does it protect XML-RPC? =
 
@@ -109,6 +118,13 @@ Verification of the attestation on submit is performed locally on your server wi
 * Privacy Policy: https://captchaapi.eu/legal/privacy
 
 == Changelog ==
+
+= 1.1.0 =
+* Added integrations for WooCommerce (login, registration, lost password, and checkout), WPForms, Fluent Forms, Formidable Forms, and Forminator.
+* Added a "Test API response" button that checks the service is reachable and the keys are in the right fields.
+* Added failsafe mode: an optional fallback that keeps forms usable while captchaapi.eu is unreachable, then resumes strict protection automatically.
+* Settings screen: grouped into sections (account keys, protected forms, behavior, advanced), a "Get your free keys" call to action when no keys are set, key format hints in the fields, and a clearer warning that the secret key must stay on the server.
+* Added translations: Czech, German, French, Spanish, Italian, Polish, Dutch, Portuguese, and Romanian.
 
 = 1.0.1 =
 * Compatibility and Plugin Check fixes for the WordPress.org directory: updated "Tested up to", aligned the plugin name with the readme, versioned the enqueued widget script, prefixed an uninstall global, and dropped the redundant load_plugin_textdomain() call.

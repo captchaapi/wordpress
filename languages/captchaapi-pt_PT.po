@@ -1,0 +1,195 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: captchaapi 1.1.0\n"
+"Report-Msgid-Bugs-To: https://captchaapi.eu\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: pt_PT\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "captchaapi.eu Proof-of-Work CAPTCHA"
+msgstr ""
+
+msgid "https://captchaapi.eu/docs"
+msgstr ""
+
+msgid "Privacy-first proof-of-work CAPTCHA. Protects the login, registration, lost-password, and comment forms, plus Contact Form 7. EU-hosted, no cookies, no tracking."
+msgstr "CAPTCHA de proof-of-work que coloca a privacidade em primeiro lugar. Protege os formulários de início de sessão, registo, recuperação de palavra-passe e comentários, além do Contact Form 7. Alojada na UE, sem cookies, sem monitorização."
+
+msgid "captchaapi.eu"
+msgstr ""
+
+msgid "https://captchaapi.eu"
+msgstr ""
+
+msgid "Verification is temporarily unavailable. Please try again."
+msgstr "A verificação está temporariamente indisponível. Tente novamente."
+
+msgid "Testing..."
+msgstr "A testar..."
+
+msgid "Test failed."
+msgstr "O teste falhou."
+
+msgid "Not allowed."
+msgstr "Não permitido."
+
+msgid "Add a site key and a secret key first."
+msgstr "Indique primeiro uma site key e uma secret key."
+
+msgid "The keys look swapped: the site key should start with pk_ and the secret key with sk_."
+msgstr "As chaves parecem estar trocadas: a site key deve começar por pk_ e a secret key por sk_."
+
+msgid "Could not reach the service. Check the API base URL and that captchaapi.eu is up."
+msgstr "Não foi possível contactar o serviço. Verifique o API base URL e se o captchaapi.eu está disponível."
+
+msgid "Connected. Your site key is valid."
+msgstr "Ligado. A sua site key é válida."
+
+msgid "Site key not recognized. Check that you copied the site key correctly."
+msgstr "Site key não reconhecida. Verifique se copiou a site key corretamente."
+
+msgid "The site key is valid, but this site's domain is not in the project's allowed domains."
+msgstr "A site key é válida, mas o domínio deste site não está nos domínios permitidos do projeto."
+
+msgid "The free tier limit for this billing period has been reached."
+msgstr "Foi atingido o limite do plano gratuito para este período de faturação."
+
+msgid "The account is suspended over billing."
+msgstr "A conta está suspensa por motivos de faturação."
+
+msgid "The account is deactivated."
+msgstr "A conta está desativada."
+
+msgid "The project is inactive."
+msgstr "O projeto está inativo."
+
+msgid "Too many requests right now. The site key is valid; try again shortly."
+msgstr "Demasiados pedidos neste momento. A site key é válida; tente novamente daqui a pouco."
+
+msgid "The service returned an unexpected response."
+msgstr "O serviço devolveu uma resposta inesperada."
+
+msgid "The service rejected the request (%s)."
+msgstr "O serviço rejeitou o pedido (%s)."
+
+msgid "Settings"
+msgstr "Definições"
+
+msgid "Get your free keys"
+msgstr "Obter as suas chaves gratuitas"
+
+msgid "Account keys"
+msgstr "Chaves da conta"
+
+msgid "Site key"
+msgstr ""
+
+msgid "The public site key from your project dashboard. Starts with pk_live_ and is safe to expose in the page."
+msgstr "A site key pública do painel do seu projeto. Começa por pk_live_ e pode ser exposta na página em segurança."
+
+msgid "Don't have one yet? %s."
+msgstr "Ainda não tem uma? %s."
+
+msgid "Currently set by the CAPTCHAAPI_SITE_KEY constant in wp-config.php."
+msgstr "Atualmente definida pela constante CAPTCHAAPI_SITE_KEY no wp-config.php."
+
+msgid "Secret key"
+msgstr ""
+
+msgid "Set by the CAPTCHAAPI_SECRET_KEYS constant in wp-config.php. Clear the constant to manage it here."
+msgstr "Definida pela constante CAPTCHAAPI_SECRET_KEYS no wp-config.php. Remova a constante para a gerir aqui."
+
+msgid "Keep this secret."
+msgstr "Mantenha isto em segredo."
+
+msgid "It belongs on the server only. Never put it in templates, JavaScript, or any public code. Anyone who has it can forge verifications."
+msgstr "Pertence apenas ao servidor. Nunca a coloque em templates, JavaScript ou qualquer código público. Quem a tiver consegue forjar verificações."
+
+msgid "Starts with sk_live_. During a key rotation, enter both keys separated by a comma."
+msgstr "Começa por sk_live_. Durante uma rotação de chaves, indique ambas as chaves separadas por vírgula."
+
+msgid "For a stricter setup, define CAPTCHAAPI_SECRET_KEYS in wp-config.php instead and leave this blank."
+msgstr "Para uma configuração mais restrita, defina antes CAPTCHAAPI_SECRET_KEYS no wp-config.php e deixe este campo em branco."
+
+msgid "Test connection"
+msgstr "Testar ligação"
+
+msgid "Checks that captchaapi.eu is reachable and your site key is valid. Save your keys first."
+msgstr "Verifica se o captchaapi.eu está acessível e se a sua site key é válida. Guarde primeiro as suas chaves."
+
+msgid "Protected forms"
+msgstr "Formulários protegidos"
+
+msgid "Login"
+msgstr "Início de sessão"
+
+msgid "Registration"
+msgstr "Registo"
+
+msgid "Lost password"
+msgstr "Recuperação de palavra-passe"
+
+msgid "Comments"
+msgstr "Comentários"
+
+msgid "Contact Form 7"
+msgstr ""
+
+msgid "WooCommerce checkout"
+msgstr "Finalização de compra do WooCommerce"
+
+msgid "WPForms"
+msgstr ""
+
+msgid "Fluent Forms"
+msgstr ""
+
+msgid "Formidable Forms"
+msgstr ""
+
+msgid "Forminator"
+msgstr ""
+
+msgid "Gravity Forms"
+msgstr ""
+
+msgid "Elementor Pro Forms"
+msgstr ""
+
+msgid "WooCommerce login, registration, and lost-password forms follow the matching options above."
+msgstr "Os formulários de início de sessão, registo e recuperação de palavra-passe do WooCommerce seguem as opções correspondentes acima."
+
+msgid "Behavior"
+msgstr "Comportamento"
+
+msgid "Failsafe mode"
+msgstr "Modo failsafe"
+
+msgid "Let submissions through when captchaapi.eu is unreachable"
+msgstr "Deixar passar os envios quando o captchaapi.eu estiver inacessível"
+
+msgid "During an outage the widget cannot produce an attestation, so strict mode would block every form. With this on, forms stay usable and protection resumes automatically once the service is back. Leave off for strict, fail-closed protection."
+msgstr "Durante uma falha o widget não consegue produzir uma atestação, pelo que o modo restrito bloquearia todos os formulários. Com esta opção ativada, os formulários continuam utilizáveis e a proteção é retomada automaticamente assim que o serviço voltar. Deixe desativada para uma proteção restrita que bloqueia em caso de falha."
+
+msgid "Advanced"
+msgstr "Avançado"
+
+msgid "API base URL"
+msgstr ""
+
+msgid "Leave as the default unless you self-host or proxy the API."
+msgstr "Deixe o valor predefinido, exceto se alojar a API por conta própria ou através de proxy."
+
+msgid "Keys are set. Your selected forms are protected."
+msgstr "As chaves estão definidas. Os formulários que selecionou estão protegidos."
+
+msgid "No keys yet, so no forms are protected. Create a free account to get your site key and secret key, then paste them in below."
+msgstr "Ainda não há chaves, por isso nenhum formulário está protegido. Crie uma conta gratuita para obter a sua site key e secret key e depois cole-as abaixo."
+
+msgid "Comment blocked"
+msgstr "Comentário bloqueado"
+
+msgid "Captcha verification failed. Reload the page and try again."
+msgstr "A verificação da captcha falhou. Recarregue a página e tente novamente."

@@ -1,0 +1,195 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: captchaapi 1.1.0\n"
+"Report-Msgid-Bugs-To: https://captchaapi.eu\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: nl_NL\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "captchaapi.eu Proof-of-Work CAPTCHA"
+msgstr ""
+
+msgid "https://captchaapi.eu/docs"
+msgstr ""
+
+msgid "Privacy-first proof-of-work CAPTCHA. Protects the login, registration, lost-password, and comment forms, plus Contact Form 7. EU-hosted, no cookies, no tracking."
+msgstr "Privacyvriendelijke proof-of-work-CAPTCHA. Beschermt de formulieren voor inloggen, registratie, wachtwoord vergeten en reacties, plus Contact Form 7. Gehost in de EU, zonder cookies, zonder tracking."
+
+msgid "captchaapi.eu"
+msgstr ""
+
+msgid "https://captchaapi.eu"
+msgstr ""
+
+msgid "Verification is temporarily unavailable. Please try again."
+msgstr "Verificatie is tijdelijk niet beschikbaar. Probeer het opnieuw."
+
+msgid "Testing..."
+msgstr "Bezig met testen..."
+
+msgid "Test failed."
+msgstr "Test mislukt."
+
+msgid "Not allowed."
+msgstr "Niet toegestaan."
+
+msgid "Add a site key and a secret key first."
+msgstr "Voeg eerst een site key en een secret key toe."
+
+msgid "The keys look swapped: the site key should start with pk_ and the secret key with sk_."
+msgstr "De sleutels lijken verwisseld: de site key hoort met pk_ te beginnen en de secret key met sk_."
+
+msgid "Could not reach the service. Check the API base URL and that captchaapi.eu is up."
+msgstr "Kan de service niet bereiken. Controleer de API base URL en of captchaapi.eu bereikbaar is."
+
+msgid "Connected. Your site key is valid."
+msgstr "Verbonden. Je site key is geldig."
+
+msgid "Site key not recognized. Check that you copied the site key correctly."
+msgstr "Site key niet herkend. Controleer of je de site key correct hebt gekopieerd."
+
+msgid "The site key is valid, but this site's domain is not in the project's allowed domains."
+msgstr "De site key is geldig, maar het domein van deze site staat niet bij de toegestane domeinen van het project."
+
+msgid "The free tier limit for this billing period has been reached."
+msgstr "De limiet van het gratis abonnement voor deze factureringsperiode is bereikt."
+
+msgid "The account is suspended over billing."
+msgstr "Het account is opgeschort vanwege betaling."
+
+msgid "The account is deactivated."
+msgstr "Het account is gedeactiveerd."
+
+msgid "The project is inactive."
+msgstr "Het project is inactief."
+
+msgid "Too many requests right now. The site key is valid; try again shortly."
+msgstr "Op dit moment te veel verzoeken. De site key is geldig; probeer het zo meteen opnieuw."
+
+msgid "The service returned an unexpected response."
+msgstr "De service gaf een onverwacht antwoord."
+
+msgid "The service rejected the request (%s)."
+msgstr "De service heeft het verzoek geweigerd (%s)."
+
+msgid "Settings"
+msgstr "Instellingen"
+
+msgid "Get your free keys"
+msgstr "Haal je gratis sleutels op"
+
+msgid "Account keys"
+msgstr "Accountsleutels"
+
+msgid "Site key"
+msgstr ""
+
+msgid "The public site key from your project dashboard. Starts with pk_live_ and is safe to expose in the page."
+msgstr "De publieke site key uit je projectdashboard. Begint met pk_live_ en mag gerust zichtbaar in de pagina staan."
+
+msgid "Don't have one yet? %s."
+msgstr "Heb je er nog geen? %s."
+
+msgid "Currently set by the CAPTCHAAPI_SITE_KEY constant in wp-config.php."
+msgstr "Momenteel ingesteld via de constante CAPTCHAAPI_SITE_KEY in wp-config.php."
+
+msgid "Secret key"
+msgstr ""
+
+msgid "Set by the CAPTCHAAPI_SECRET_KEYS constant in wp-config.php. Clear the constant to manage it here."
+msgstr "Ingesteld via de constante CAPTCHAAPI_SECRET_KEYS in wp-config.php. Verwijder de constante om dit hier te beheren."
+
+msgid "Keep this secret."
+msgstr "Houd dit geheim."
+
+msgid "It belongs on the server only. Never put it in templates, JavaScript, or any public code. Anyone who has it can forge verifications."
+msgstr "Het hoort alleen op de server thuis. Zet het nooit in templates, JavaScript of andere publieke code. Iedereen die het heeft, kan verificaties vervalsen."
+
+msgid "Starts with sk_live_. During a key rotation, enter both keys separated by a comma."
+msgstr "Begint met sk_live_. Voer tijdens het wisselen van sleutels beide sleutels in, gescheiden door een komma."
+
+msgid "For a stricter setup, define CAPTCHAAPI_SECRET_KEYS in wp-config.php instead and leave this blank."
+msgstr "Voor een striktere opzet definieer je in plaats daarvan CAPTCHAAPI_SECRET_KEYS in wp-config.php en laat je dit veld leeg."
+
+msgid "Test connection"
+msgstr "Verbinding testen"
+
+msgid "Checks that captchaapi.eu is reachable and your site key is valid. Save your keys first."
+msgstr "Controleert of captchaapi.eu bereikbaar is en of je site key geldig is. Sla eerst je sleutels op."
+
+msgid "Protected forms"
+msgstr "Beschermde formulieren"
+
+msgid "Login"
+msgstr "Inloggen"
+
+msgid "Registration"
+msgstr "Registratie"
+
+msgid "Lost password"
+msgstr "Wachtwoord vergeten"
+
+msgid "Comments"
+msgstr "Reacties"
+
+msgid "Contact Form 7"
+msgstr ""
+
+msgid "WooCommerce checkout"
+msgstr "WooCommerce-afrekenen"
+
+msgid "WPForms"
+msgstr ""
+
+msgid "Fluent Forms"
+msgstr ""
+
+msgid "Formidable Forms"
+msgstr ""
+
+msgid "Forminator"
+msgstr ""
+
+msgid "Gravity Forms"
+msgstr ""
+
+msgid "Elementor Pro Forms"
+msgstr ""
+
+msgid "WooCommerce login, registration, and lost-password forms follow the matching options above."
+msgstr "De formulieren voor inloggen, registratie en wachtwoord vergeten in WooCommerce volgen de bijbehorende opties hierboven."
+
+msgid "Behavior"
+msgstr "Gedrag"
+
+msgid "Failsafe mode"
+msgstr "Failsafe-modus"
+
+msgid "Let submissions through when captchaapi.eu is unreachable"
+msgstr "Inzendingen doorlaten wanneer captchaapi.eu onbereikbaar is"
+
+msgid "During an outage the widget cannot produce an attestation, so strict mode would block every form. With this on, forms stay usable and protection resumes automatically once the service is back. Leave off for strict, fail-closed protection."
+msgstr "Tijdens een storing kan de widget geen attestatie aanmaken, dus de strikte modus zou elk formulier blokkeren. Als dit aanstaat, blijven formulieren bruikbaar en wordt de bescherming automatisch hervat zodra de service weer beschikbaar is. Laat het uit voor strikte bescherming die bij problemen blokkeert."
+
+msgid "Advanced"
+msgstr "Geavanceerd"
+
+msgid "API base URL"
+msgstr ""
+
+msgid "Leave as the default unless you self-host or proxy the API."
+msgstr "Laat dit op de standaardwaarde staan, tenzij je de API zelf host of via een proxy laat lopen."
+
+msgid "Keys are set. Your selected forms are protected."
+msgstr "Sleutels zijn ingesteld. Je geselecteerde formulieren zijn beschermd."
+
+msgid "No keys yet, so no forms are protected. Create a free account to get your site key and secret key, then paste them in below."
+msgstr "Nog geen sleutels, dus er zijn geen formulieren beschermd. Maak een gratis account aan om je site key en secret key te krijgen en plak ze hieronder."
+
+msgid "Comment blocked"
+msgstr "Reactie geblokkeerd"
+
+msgid "Captcha verification failed. Reload the page and try again."
+msgstr "Captchaverificatie mislukt. Herlaad de pagina en probeer het opnieuw."
