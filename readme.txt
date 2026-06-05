@@ -1,18 +1,20 @@
-=== captchaapi.eu Proof-of-Work CAPTCHA ===
+=== GDPR Cookieless CAPTCHA for WooCommerce & Forms - captchaapi.eu ===
 Contributors: rajtik
-Tags: captcha, spam, login, comments, antispam
+Tags: captcha, recaptcha, gdpr, antispam, woocommerce
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.1.0
+Stable tag: 1.1.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Proof-of-work CAPTCHA with no puzzles and no cookies. Protects login, registration, comments, WooCommerce, and popular form plugins.
+Cookieless, EU-hosted reCAPTCHA alternative for WooCommerce, WPForms, Fluent Forms & CF7. GDPR-clean, no cookie banner.
 
 == Description ==
 
-captchaapi.eu stops form spam without making your visitors click traffic lights. The work happens in the background: the visitor's browser solves a small proof-of-work puzzle while they fill in the form, and a signed token rides along with the submission. There is nothing to solve and nothing to see.
+Protects WooCommerce (login, registration, lost password, checkout), WPForms, Fluent Forms, Formidable Forms, Forminator and Contact Form 7 - cookieless, EU-hosted, no cookie banner required.
+
+A privacy-first alternative to reCAPTCHA: captchaapi.eu stops form spam without making your visitors click traffic lights. A free tier with commercial use allowed gets you started. The work happens in the background: the visitor's browser solves a small proof-of-work puzzle while they fill in the form, and a signed token rides along with the submission. There is nothing to solve and nothing to see.
 
 Your server checks that token locally with your secret key. No request is sent back to captchaapi.eu when a form is submitted, so the check adds no network latency and keeps working even if our service is briefly unreachable.
 
@@ -73,7 +75,7 @@ The verification is a local HMAC check, so it adds no network round trip on subm
 
 = What happens if captchaapi.eu is unreachable? =
 
-The widget will not produce an attestation, so a protected form will not submit. The plugin fails closed by design: a submission without a valid attestation is rejected rather than waved through.
+By default the plugin fails closed: if the widget cannot produce an attestation, a protected form will not submit, so a missing attestation is rejected rather than waved through. If you would rather keep forms working during an outage, turn on the optional failsafe mode: it lets submissions through while captchaapi.eu is unreachable and automatically resumes strict protection once the service is back.
 
 = Does it work with Contact Form 7? =
 
@@ -118,6 +120,10 @@ Verification of the attestation on submit is performed locally on your server wi
 * Privacy Policy: https://captchaapi.eu/legal/privacy
 
 == Changelog ==
+
+= 1.1.1 =
+* Clearer directory listing: updated title, tags, and description to highlight the cookieless, EU-hosted protection and the supported form plugins.
+* Documented failsafe mode in the FAQ: forms can stay usable during a captchaapi.eu outage, then strict protection resumes automatically.
 
 = 1.1.0 =
 * Added integrations for WooCommerce (login, registration, lost password, and checkout), WPForms, Fluent Forms, Formidable Forms, and Forminator.
