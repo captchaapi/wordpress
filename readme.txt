@@ -1,10 +1,10 @@
 === GDPR Cookieless CAPTCHA for WooCommerce & Forms - captchaapi.eu ===
 Contributors: rajtik
-Tags: captcha, recaptcha, gdpr, antispam, woocommerce
+Tags: captcha, recaptcha, spam, contact form, gdpr
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 2.0.0
+Stable tag: 2.0.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -12,28 +12,47 @@ Cookieless, EU-hosted reCAPTCHA alternative for WooCommerce, WPForms, Fluent For
 
 == Description ==
 
-Protects WooCommerce (login, registration, lost password, checkout), WPForms, Fluent Forms, Formidable Forms, Forminator and Contact Form 7 - cookieless, EU-hosted, no cookie banner required.
+Protects WooCommerce (login, registration, lost password, checkout), Contact Form 7, WPForms, Fluent Forms, Formidable Forms, Forminator, Gravity Forms and Elementor Forms - cookieless, EU-hosted, no cookie banner required.
 
 A privacy-first alternative to reCAPTCHA: captchaapi.eu stops form spam without making your visitors click traffic lights. A free tier with commercial use allowed gets you started. The work happens in the background: the visitor's browser solves a small proof-of-work puzzle while they fill in the form, and a token rides along with the submission. There is nothing to solve and nothing to see.
 
 When a form is submitted, your server confirms that token with captchaapi.eu over a single request, secured by your secret key. It is the same model every hosted CAPTCHA uses, and it keeps the secret on your server, never in the browser.
 
-The service runs on hardware in the EU (Nuremberg, Germany). It sets no cookies and writes no per-visitor record to a database; the visitor's IP address is used only transiently for rate limiting and abuse detection.
+= Privacy by design =
 
-= What it protects =
+* No cookies, and nothing to add to a cookie banner.
+* No tracking and no visitor profile. The IP address is used only for rate limiting and abuse detection, then dropped; it is never written to a database.
+* Hosted only in the EU, in Nuremberg, Germany. No data leaves the EU.
+* No images and no puzzles to solve. The check runs in the background, so it works the same for every visitor, including people who find image challenges difficult or browse with a screen reader.
+* A free tier, with commercial use allowed.
 
-* Login (wp-login.php and WooCommerce)
-* Registration (WordPress and WooCommerce)
-* Lost password (WordPress and WooCommerce)
+= Forms and plugins it protects =
+
+WordPress core:
+
+* Login (wp-login.php)
+* Registration
+* Lost password
 * Comments
-* WooCommerce checkout
+
+WooCommerce:
+
+* Login
+* Registration
+* Lost password
+* Checkout
+
+Form plugins:
+
 * Contact Form 7
 * WPForms
 * Fluent Forms
 * Formidable Forms
 * Forminator
+* Gravity Forms
+* Elementor Forms
 
-Each surface can be turned on or off from the settings screen. Integration options for Contact Form 7, WooCommerce, and the supported form plugins appear only when that plugin is active.
+Each form can be turned on or off from the settings screen. The WooCommerce and form-plugin options appear only when that plugin is active.
 
 = How it works =
 
@@ -83,7 +102,7 @@ Yes. Enable Contact Form 7 in the settings. The plugin acquires a token before C
 
 = Which form plugins are supported? =
 
-WooCommerce, WPForms, Fluent Forms, Formidable Forms, and Forminator, in addition to Contact Form 7. Enable each from the settings screen; the option appears only when that plugin is active. The plugin attaches a token before the form is sent and verifies it on the server.
+WooCommerce, WPForms, Fluent Forms, Formidable Forms, Forminator, Gravity Forms, and Elementor Forms, in addition to Contact Form 7. Enable each from the settings screen; the option appears only when that plugin is active. The plugin attaches a token before the form is sent and verifies it on the server.
 
 = Do you set cookies or track visitors? =
 
@@ -120,6 +139,9 @@ When a protected form is submitted, your server sends the token to the captchaap
 * Privacy Policy: https://captchaapi.eu/legal/privacy
 
 == Changelog ==
+
+= 2.0.1 =
+* Clearer directory listing: grouped the protected forms by WordPress core, WooCommerce, and form plugins, added Gravity Forms and Elementor Forms to the list, refreshed the tags, and added a "Privacy by design" summary. No code changes.
 
 = 2.0.0 =
 * Verification is now a server-to-server call. The plugin confirms each token with the captchaapi.eu /verify endpoint using your secret key, instead of checking a signed token locally. The form field is now `captchaapi_response`.
