@@ -4,7 +4,7 @@ Tags: captcha, recaptcha, spam, contact form, gdpr
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 2.0.1
+Stable tag: 2.0.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -139,6 +139,9 @@ When a protected form is submitted, your server sends the token to the captchaap
 * Privacy Policy: https://captchaapi.eu/legal/privacy
 
 == Changelog ==
+
+= 2.0.2 =
+* Stopped marking product names and the captchaapi.eu brand as translatable strings, so the translation list only contains real interface text.
 
 = 2.0.1 =
 * Clearer directory listing: grouped the protected forms by WordPress core, WooCommerce, and form plugins, added Gravity Forms and Elementor Forms to the list, refreshed the tags, and added a "Privacy by design" summary. No code changes.

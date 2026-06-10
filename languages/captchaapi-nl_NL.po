@@ -1,195 +1,330 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: captchaapi 1.1.0\n"
-"Report-Msgid-Bugs-To: https://captchaapi.eu\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/wordpress\n"
+"POT-Creation-Date: 2026-06-10T19:51:08+00:00\n"
+"Language: nl_NL\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: nl_NL\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-msgid "captchaapi.eu Proof-of-Work CAPTCHA"
+#. Plugin Name of the plugin
+#: captchaapi.php
+msgid "GDPR Cookieless CAPTCHA for WooCommerce & Forms - captchaapi.eu"
 msgstr ""
 
+#. Plugin URI of the plugin
+#: captchaapi.php
 msgid "https://captchaapi.eu/docs"
 msgstr ""
 
-msgid "Privacy-first proof-of-work CAPTCHA. Protects the login, registration, lost-password, and comment forms, plus Contact Form 7. EU-hosted, no cookies, no tracking."
-msgstr "Privacyvriendelijke proof-of-work-CAPTCHA. Beschermt de formulieren voor inloggen, registratie, wachtwoord vergeten en reacties, plus Contact Form 7. Gehost in de EU, zonder cookies, zonder tracking."
+#. Description of the plugin
+#: captchaapi.php
+msgid ""
+"Cookieless, GDPR-friendly CAPTCHA hosted in the EU - a privacy-first "
+"reCAPTCHA alternative. Protects login, registration, lost-password, "
+"comments, WooCommerce, and the popular form plugins."
+msgstr ""
 
+#. Author of the plugin
+#: captchaapi.php
 msgid "captchaapi.eu"
 msgstr ""
 
+#. Author URI of the plugin
+#: captchaapi.php
 msgid "https://captchaapi.eu"
 msgstr ""
 
+#: includes/class-captchaapi-assets.php:109
+#: includes/class-captchaapi-assets.php:126
+#: includes/class-captchaapi-assets.php:143
 msgid "Verification is temporarily unavailable. Please try again."
 msgstr "Verificatie is tijdelijk niet beschikbaar. Probeer het opnieuw."
 
+#: includes/class-captchaapi-settings.php:65
 msgid "Testing..."
 msgstr "Bezig met testen..."
 
+#: includes/class-captchaapi-settings.php:66
 msgid "Test failed."
 msgstr "Test mislukt."
 
+#: includes/class-captchaapi-settings.php:77
 msgid "Not allowed."
 msgstr "Niet toegestaan."
 
+#: includes/class-captchaapi-settings.php:84
 msgid "Add a site key and a secret key first."
 msgstr "Voeg eerst een site key en een secret key toe."
 
-msgid "The keys look swapped: the site key should start with pk_ and the secret key with sk_."
-msgstr "De sleutels lijken verwisseld: de site key hoort met pk_ te beginnen en de secret key met sk_."
+#: includes/class-captchaapi-settings.php:90
+msgid ""
+"The keys look swapped: the site key should start with pk_ and the secret key "
+"with sk_."
+msgstr ""
+"De sleutels lijken verwisseld: de site key hoort met pk_ te beginnen en de "
+"secret key met sk_."
 
-msgid "Could not reach the service. Check the API base URL and that captchaapi.eu is up."
-msgstr "Kan de service niet bereiken. Controleer de API base URL en of captchaapi.eu bereikbaar is."
+#: includes/class-captchaapi-settings.php:108
+msgid ""
+"Could not reach the service. Check the API base URL and that captchaapi.eu "
+"is up."
+msgstr ""
+"Kan de service niet bereiken. Controleer de API base URL en of captchaapi.eu "
+"bereikbaar is."
 
+#: includes/class-captchaapi-settings.php:112
 msgid "Connected. Your site key is valid."
 msgstr "Verbonden. Je site key is geldig."
 
+#: includes/class-captchaapi-settings.php:138
 msgid "Site key not recognized. Check that you copied the site key correctly."
-msgstr "Site key niet herkend. Controleer of je de site key correct hebt gekopieerd."
+msgstr ""
+"Site key niet herkend. Controleer of je de site key correct hebt gekopieerd."
 
-msgid "The site key is valid, but this site's domain is not in the project's allowed domains."
-msgstr "De site key is geldig, maar het domein van deze site staat niet bij de toegestane domeinen van het project."
+#: includes/class-captchaapi-settings.php:140
+msgid ""
+"The site key is valid, but this site's domain is not in the project's "
+"allowed domains."
+msgstr ""
+"De site key is geldig, maar het domein van deze site staat niet bij de "
+"toegestane domeinen van het project."
 
+#: includes/class-captchaapi-settings.php:142
 msgid "The free tier limit for this billing period has been reached."
-msgstr "De limiet van het gratis abonnement voor deze factureringsperiode is bereikt."
+msgstr ""
+"De limiet van het gratis abonnement voor deze factureringsperiode is bereikt."
 
+#: includes/class-captchaapi-settings.php:144
 msgid "The account is suspended over billing."
 msgstr "Het account is opgeschort vanwege betaling."
 
+#: includes/class-captchaapi-settings.php:146
 msgid "The account is deactivated."
 msgstr "Het account is gedeactiveerd."
 
+#: includes/class-captchaapi-settings.php:148
 msgid "The project is inactive."
 msgstr "Het project is inactief."
 
+#: includes/class-captchaapi-settings.php:150
 msgid "Too many requests right now. The site key is valid; try again shortly."
-msgstr "Op dit moment te veel verzoeken. De site key is geldig; probeer het zo meteen opnieuw."
+msgstr ""
+"Op dit moment te veel verzoeken. De site key is geldig; probeer het zo "
+"meteen opnieuw."
 
+#: includes/class-captchaapi-settings.php:152
 msgid "The service returned an unexpected response."
 msgstr "De service gaf een onverwacht antwoord."
 
+#. translators: %s: error code returned by the service.
+#: includes/class-captchaapi-settings.php:155
+#, php-format
 msgid "The service rejected the request (%s)."
 msgstr "De service heeft het verzoek geweigerd (%s)."
 
+#: includes/class-captchaapi-settings.php:232
 msgid "Settings"
 msgstr "Instellingen"
 
+#: includes/class-captchaapi-settings.php:241
+#: includes/class-captchaapi-settings.php:282
+#: includes/class-captchaapi-settings.php:435
 msgid "Get your free keys"
 msgstr "Haal je gratis sleutels op"
 
+#: includes/class-captchaapi-settings.php:266
 msgid "Account keys"
 msgstr "Accountsleutels"
 
+#: includes/class-captchaapi-settings.php:269
 msgid "Site key"
 msgstr ""
 
-msgid "The public site key from your project dashboard. Starts with pk_live_ and is safe to expose in the page."
-msgstr "De publieke site key uit je projectdashboard. Begint met pk_live_ en mag gerust zichtbaar in de pagina staan."
+#: includes/class-captchaapi-settings.php:277
+msgid ""
+"The public site key from your project dashboard. Starts with pk_live_ and is "
+"safe to expose in the page."
+msgstr ""
+"De publieke site key uit je projectdashboard. Begint met pk_live_ en mag "
+"gerust zichtbaar in de pagina staan."
 
+#. translators: %s: link to create a free account.
+#: includes/class-captchaapi-settings.php:281
+#, php-format
 msgid "Don't have one yet? %s."
 msgstr "Heb je er nog geen? %s."
 
+#: includes/class-captchaapi-settings.php:286
 msgid "Currently set by the CAPTCHAAPI_SITE_KEY constant in wp-config.php."
-msgstr "Momenteel ingesteld via de constante CAPTCHAAPI_SITE_KEY in wp-config.php."
+msgstr ""
+"Momenteel ingesteld via de constante CAPTCHAAPI_SITE_KEY in wp-config.php."
 
+#: includes/class-captchaapi-settings.php:292
 msgid "Secret key"
 msgstr ""
 
-msgid "Set by the CAPTCHAAPI_SECRET_KEYS constant in wp-config.php. Clear the constant to manage it here."
-msgstr "Ingesteld via de constante CAPTCHAAPI_SECRET_KEYS in wp-config.php. Verwijder de constante om dit hier te beheren."
+#: includes/class-captchaapi-settings.php:296
+msgid ""
+"Set by the CAPTCHAAPI_SECRET_KEYS constant in wp-config.php. Clear the "
+"constant to manage it here."
+msgstr ""
+"Ingesteld via de constante CAPTCHAAPI_SECRET_KEYS in wp-config.php. "
+"Verwijder de constante om dit hier te beheren."
 
+#: includes/class-captchaapi-settings.php:306
 msgid "Keep this secret."
 msgstr "Houd dit geheim."
 
-msgid "It belongs on the server only. Never put it in templates, JavaScript, or any public code. Anyone who has it can forge verifications."
-msgstr "Het hoort alleen op de server thuis. Zet het nooit in templates, JavaScript of andere publieke code. Iedereen die het heeft, kan verificaties vervalsen."
+#: includes/class-captchaapi-settings.php:307
+msgid ""
+"It belongs on the server only. Never put it in templates, JavaScript, or any "
+"public code. Anyone who has it can forge verifications."
+msgstr ""
+"Het hoort alleen op de server thuis. Zet het nooit in templates, JavaScript "
+"of andere publieke code. Iedereen die het heeft, kan verificaties vervalsen."
 
-msgid "Starts with sk_live_. During a key rotation, enter both keys separated by a comma."
-msgstr "Begint met sk_live_. Voer tijdens het wisselen van sleutels beide sleutels in, gescheiden door een komma."
+#: includes/class-captchaapi-settings.php:310
+msgid ""
+"Starts with sk_live_. During a key rotation, enter both keys separated by a "
+"comma."
+msgstr ""
+"Begint met sk_live_. Voer tijdens het wisselen van sleutels beide sleutels "
+"in, gescheiden door een komma."
 
-msgid "For a stricter setup, define CAPTCHAAPI_SECRET_KEYS in wp-config.php instead and leave this blank."
-msgstr "Voor een striktere opzet definieer je in plaats daarvan CAPTCHAAPI_SECRET_KEYS in wp-config.php en laat je dit veld leeg."
+#: includes/class-captchaapi-settings.php:311
+msgid ""
+"For a stricter setup, define CAPTCHAAPI_SECRET_KEYS in wp-config.php instead "
+"and leave this blank."
+msgstr ""
+"Voor een striktere opzet definieer je in plaats daarvan "
+"CAPTCHAAPI_SECRET_KEYS in wp-config.php en laat je dit veld leeg."
 
+#: includes/class-captchaapi-settings.php:317
+#: includes/class-captchaapi-settings.php:319
 msgid "Test connection"
 msgstr "Verbinding testen"
 
-msgid "Checks that captchaapi.eu is reachable and your site key is valid. Save your keys first."
-msgstr "Controleert of captchaapi.eu bereikbaar is en of je site key geldig is. Sla eerst je sleutels op."
+#: includes/class-captchaapi-settings.php:322
+msgid ""
+"Checks that captchaapi.eu is reachable and your site key is valid. Save your "
+"keys first."
+msgstr ""
+"Controleert of captchaapi.eu bereikbaar is en of je site key geldig is. Sla "
+"eerst je sleutels op."
 
+#: includes/class-captchaapi-settings.php:328
+#: includes/class-captchaapi-settings.php:331
 msgid "Protected forms"
 msgstr "Beschermde formulieren"
 
+#: includes/class-captchaapi-settings.php:335
 msgid "Login"
 msgstr "Inloggen"
 
+#: includes/class-captchaapi-settings.php:336
 msgid "Registration"
 msgstr "Registratie"
 
+#: includes/class-captchaapi-settings.php:337
 msgid "Lost password"
 msgstr "Wachtwoord vergeten"
 
+#: includes/class-captchaapi-settings.php:338
 msgid "Comments"
 msgstr "Reacties"
 
-msgid "Contact Form 7"
-msgstr ""
-
+#: includes/class-captchaapi-settings.php:345
 msgid "WooCommerce checkout"
 msgstr "WooCommerce-afrekenen"
 
-msgid "WPForms"
+#: includes/class-captchaapi-settings.php:369
+msgid ""
+"WooCommerce login, registration, and lost-password forms follow the matching "
+"options above."
 msgstr ""
+"De formulieren voor inloggen, registratie en wachtwoord vergeten in "
+"WooCommerce volgen de bijbehorende opties hierboven."
 
-msgid "Fluent Forms"
-msgstr ""
-
-msgid "Formidable Forms"
-msgstr ""
-
-msgid "Forminator"
-msgstr ""
-
-msgid "Gravity Forms"
-msgstr ""
-
-msgid "Elementor Pro Forms"
-msgstr ""
-
-msgid "WooCommerce login, registration, and lost-password forms follow the matching options above."
-msgstr "De formulieren voor inloggen, registratie en wachtwoord vergeten in WooCommerce volgen de bijbehorende opties hierboven."
-
+#: includes/class-captchaapi-settings.php:377
 msgid "Behavior"
 msgstr "Gedrag"
 
+#: includes/class-captchaapi-settings.php:380
 msgid "Failsafe mode"
 msgstr "Failsafe-modus"
 
+#: includes/class-captchaapi-settings.php:385
 msgid "Let submissions through when captchaapi.eu is unreachable"
 msgstr "Inzendingen doorlaten wanneer captchaapi.eu onbereikbaar is"
 
-msgid "During an outage the widget cannot produce an attestation, so strict mode would block every form. With this on, forms stay usable and protection resumes automatically once the service is back. Leave off for strict, fail-closed protection."
-msgstr "Tijdens een storing kan de widget geen attestatie aanmaken, dus de strikte modus zou elk formulier blokkeren. Als dit aanstaat, blijven formulieren bruikbaar en wordt de bescherming automatisch hervat zodra de service weer beschikbaar is. Laat het uit voor strikte bescherming die bij problemen blokkeert."
+#: includes/class-captchaapi-settings.php:388
+msgid ""
+"During an outage the verify request cannot reach captchaapi.eu, so strict "
+"mode would block every form. With this on, forms stay usable and protection "
+"resumes automatically once the service is back. Leave off for strict, fail-"
+"closed protection."
+msgstr ""
 
+#: includes/class-captchaapi-settings.php:395
 msgid "Advanced"
 msgstr "Geavanceerd"
 
+#: includes/class-captchaapi-settings.php:398
 msgid "API base URL"
 msgstr ""
 
+#: includes/class-captchaapi-settings.php:405
 msgid "Leave as the default unless you self-host or proxy the API."
-msgstr "Laat dit op de standaardwaarde staan, tenzij je de API zelf host of via een proxy laat lopen."
+msgstr ""
+"Laat dit op de standaardwaarde staan, tenzij je de API zelf host of via een "
+"proxy laat lopen."
 
+#: includes/class-captchaapi-settings.php:422
 msgid "Keys are set. Your selected forms are protected."
 msgstr "Sleutels zijn ingesteld. Je geselecteerde formulieren zijn beschermd."
 
-msgid "No keys yet, so no forms are protected. Create a free account to get your site key and secret key, then paste them in below."
-msgstr "Nog geen sleutels, dus er zijn geen formulieren beschermd. Maak een gratis account aan om je site key en secret key te krijgen en plak ze hieronder."
+#: includes/class-captchaapi-settings.php:433
+msgid ""
+"No keys yet, so no forms are protected. Create a free account to get your "
+"site key and secret key, then paste them in below."
+msgstr ""
+"Nog geen sleutels, dus er zijn geen formulieren beschermd. Maak een gratis "
+"account aan om je site key en secret key te krijgen en plak ze hieronder."
 
+#: includes/integrations/class-captchaapi-core-forms.php:108
 msgid "Comment blocked"
 msgstr "Reactie geblokkeerd"
 
+#: includes/integrations/class-captchaapi-core-forms.php:132
+#: includes/integrations/class-captchaapi-elementor-forms.php:61
+#: includes/integrations/class-captchaapi-fluent-forms.php:77
+#: includes/integrations/class-captchaapi-formidable.php:57
+#: includes/integrations/class-captchaapi-forminator.php:61
+#: includes/integrations/class-captchaapi-woocommerce.php:93
+#: includes/integrations/class-captchaapi-wpforms.php:61
 msgid "Captcha verification failed. Reload the page and try again."
 msgstr "Captchaverificatie mislukt. Herlaad de pagina en probeer het opnieuw."
+
+#~ msgid ""
+#~ "Privacy-first proof-of-work CAPTCHA. Protects the login, registration, "
+#~ "lost-password, and comment forms, plus Contact Form 7. EU-hosted, no "
+#~ "cookies, no tracking."
+#~ msgstr ""
+#~ "Privacyvriendelijke proof-of-work-CAPTCHA. Beschermt de formulieren voor "
+#~ "inloggen, registratie, wachtwoord vergeten en reacties, plus Contact Form "
+#~ "7. Gehost in de EU, zonder cookies, zonder tracking."
+
+#~ msgid ""
+#~ "During an outage the widget cannot produce an attestation, so strict mode "
+#~ "would block every form. With this on, forms stay usable and protection "
+#~ "resumes automatically once the service is back. Leave off for strict, "
+#~ "fail-closed protection."
+#~ msgstr ""
+#~ "Tijdens een storing kan de widget geen attestatie aanmaken, dus de "
+#~ "strikte modus zou elk formulier blokkeren. Als dit aanstaat, blijven "
+#~ "formulieren bruikbaar en wordt de bescherming automatisch hervat zodra de "
+#~ "service weer beschikbaar is. Laat het uit voor strikte bescherming die "
+#~ "bij problemen blokkeert."

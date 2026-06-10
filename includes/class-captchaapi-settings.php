@@ -159,8 +159,8 @@ class Captchaapi_Settings
     public function add_page(): void
     {
         add_options_page(
-            __('captchaapi.eu', 'captchaapi'),
-            __('captchaapi.eu', 'captchaapi'),
+            'captchaapi.eu',
+            'captchaapi.eu',
             'manage_options',
             self::PAGE,
             [$this, 'render']
@@ -256,7 +256,7 @@ class Captchaapi_Settings
         $name               = Captchaapi_Options::OPTION_KEY;
         ?>
         <div class="wrap captchaapi-settings">
-            <h1><?php esc_html_e('captchaapi.eu', 'captchaapi'); ?></h1>
+            <h1>captchaapi.eu</h1>
 
             <?php $this->render_status(); ?>
 
@@ -338,7 +338,7 @@ class Captchaapi_Settings
                                 $this->checkbox($name, 'protect_comments', __('Comments', 'captchaapi'), ! empty($values['protect_comments']));
 
                                 if (Captchaapi_Contact_Form_7::is_active()) {
-                                    $this->checkbox($name, 'protect_cf7', __('Contact Form 7', 'captchaapi'), ! empty($values['protect_cf7']));
+                                    $this->checkbox($name, 'protect_cf7', 'Contact Form 7', ! empty($values['protect_cf7']));
                                 }
 
                                 if (Captchaapi_WooCommerce::is_active()) {
@@ -346,22 +346,22 @@ class Captchaapi_Settings
                                 }
 
                                 if (Captchaapi_WPForms::is_active()) {
-                                    $this->checkbox($name, 'protect_wpforms', __('WPForms', 'captchaapi'), ! empty($values['protect_wpforms']));
+                                    $this->checkbox($name, 'protect_wpforms', 'WPForms', ! empty($values['protect_wpforms']));
                                 }
                                 if (Captchaapi_Fluent_Forms::is_active()) {
-                                    $this->checkbox($name, 'protect_fluentform', __('Fluent Forms', 'captchaapi'), ! empty($values['protect_fluentform']));
+                                    $this->checkbox($name, 'protect_fluentform', 'Fluent Forms', ! empty($values['protect_fluentform']));
                                 }
                                 if (Captchaapi_Formidable::is_active()) {
-                                    $this->checkbox($name, 'protect_formidable', __('Formidable Forms', 'captchaapi'), ! empty($values['protect_formidable']));
+                                    $this->checkbox($name, 'protect_formidable', 'Formidable Forms', ! empty($values['protect_formidable']));
                                 }
                                 if (Captchaapi_Forminator::is_active()) {
-                                    $this->checkbox($name, 'protect_forminator', __('Forminator', 'captchaapi'), ! empty($values['protect_forminator']));
+                                    $this->checkbox($name, 'protect_forminator', 'Forminator', ! empty($values['protect_forminator']));
                                 }
                                 if (Captchaapi_Gravity_Forms::is_active()) {
-                                    $this->checkbox($name, 'protect_gravityforms', __('Gravity Forms', 'captchaapi'), ! empty($values['protect_gravityforms']));
+                                    $this->checkbox($name, 'protect_gravityforms', 'Gravity Forms', ! empty($values['protect_gravityforms']));
                                 }
                                 if (Captchaapi_Elementor_Forms::is_active()) {
-                                    $this->checkbox($name, 'protect_elementor_forms', __('Elementor Pro Forms', 'captchaapi'), ! empty($values['protect_elementor_forms']));
+                                    $this->checkbox($name, 'protect_elementor_forms', 'Elementor Pro Forms', ! empty($values['protect_elementor_forms']));
                                 }
                                 ?>
                                 <?php if (Captchaapi_WooCommerce::is_active()) : ?>
