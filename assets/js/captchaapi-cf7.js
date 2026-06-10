@@ -4,9 +4,9 @@
  * CF7 attaches its own submit listener that fires its AJAX request right away,
  * so the widget's submit mode can't win the race. A capture-phase listener on
  * the document intercepts the first submit of any CF7 form, fetches a fresh
- * attestation through window.captchaapi.solve(), drops it into the form, and
+ * response through window.captchaapi.solve(), drops it into the form, and
  * re-submits. The second pass is let through to CF7's own listener, which sends
- * the form with the attestation included.
+ * the form with the response included.
  *
  * Listening on the document (not per form) means forms inserted after load -
  * modals, page-builder popups, AJAX-rendered blocks - are covered too.
@@ -36,13 +36,13 @@
         output.textContent = message();
     }
 
-    function setAttestation(form, value) {
-        var input = form.querySelector('input[name="captcha_attestation"]');
+    function setResponse(form, value) {
+        var input = form.querySelector('input[name="captchaapi_response"]');
 
         if (!input) {
             input = document.createElement('input');
             input.type = 'hidden';
-            input.name = 'captcha_attestation';
+            input.name = 'captchaapi_response';
             form.appendChild(input);
         }
 
@@ -50,7 +50,7 @@
     }
 
     function handle(form, event) {
-        // The re-fired submit already carries a fresh attestation: let CF7 send it.
+        // The re-fired submit already carries a fresh response: let CF7 send it.
         if (form.__captchaapiCleared) {
             form.__captchaapiCleared = false;
             return;
@@ -83,8 +83,8 @@
         form.__captchaapiSolving = true;
         var submitter = event.submitter || null;
 
-        window.captchaapi.solve().then(function (attestation) {
-            setAttestation(form, attestation);
+        window.captchaapi.solve().then(function (response) {
+            setResponse(form, response);
             form.__captchaapiCleared = true;
             form.requestSubmit(submitter || undefined);
         }).catch(function () {

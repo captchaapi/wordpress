@@ -5,86 +5,65 @@ if (! defined('ABSPATH')) {
 }
 
 /**
- * Verifies a captcha attestation locally. No call back to captchaapi.eu is made:
- * the attestation is an HMAC-SHA256 signature the project's secret key can check
- * on its own.
+ * Verifies a captcha response with captchaapi.eu over a server-to-server call.
  *
- * An attestation is "base64url(payload).base64url(signature)". Verification
- * proves the payload was signed by one of our secret keys, has not expired, and
- * was minted for this site key. Single-use enforcement (the jti) lives in
- * Captchaapi_Replay_Store, not here.
+ * The browser widget injects a single `captchaapi_response` value; we POST it to
+ * /verify with the project secret as a Bearer token and trust the server's
+ * `success` flag. The response is single-use - the server consumes it on the
+ * first verify - so there is no retry. A 5xx or an unreachable host is reported
+ * as "unavailable" so the gate's failsafe can decide; any other non-success is a
+ * plain rejection.
  */
 class Captchaapi_Verifier
 {
-    /**
-     * @var array<int, string>
-     */
-    private array $secret_keys;
+    const VERIFIED = 'verified';
 
-    private string $site_key;
+    const REJECTED = 'rejected';
 
-    /**
-     * @param array<int, string> $secret_keys Any key in the list is accepted, which allows zero-downtime rotation.
-     */
-    public function __construct(array $secret_keys, string $site_key)
+    const UNAVAILABLE = 'unavailable';
+
+    private string $secret_key;
+
+    private string $verify_url;
+
+    public function __construct(string $secret_key, string $verify_url)
     {
-        $this->secret_keys = $secret_keys;
-        $this->site_key    = $site_key;
+        $this->secret_key = $secret_key;
+        $this->verify_url = $verify_url;
     }
 
-    /**
-     * Returns the decoded payload when the attestation is genuine, unexpired, and
-     * bound to this site key. Returns null on any failure.
-     *
-     * @return array<string, mixed>|null
-     */
-    public function verify(string $attestation): ?array
+    public function verify(string $response): string
     {
-        if ($this->secret_keys === [] || strpos($attestation, '.') === false) {
-            return null;
+        if ($this->secret_key === '' || $response === '') {
+            return self::REJECTED;
         }
 
-        list($payload_b64, $signature_b64) = explode('.', $attestation, 2);
+        $result = wp_remote_post($this->verify_url, [
+            'timeout' => 5,
+            'headers' => [
+                'Authorization' => 'Bearer ' . $this->secret_key,
+                'Accept'        => 'application/json',
+                'Content-Type'  => 'application/json',
+            ],
+            'body' => wp_json_encode(['response' => $response]),
+        ]);
 
-        $signature = base64_decode(strtr($signature_b64, '-_', '+/'), true);
-        if ($signature === false) {
-            return null;
+        if (is_wp_error($result)) {
+            return self::UNAVAILABLE;
         }
 
-        if (! $this->signature_matches($payload_b64, $signature)) {
-            return null;
+        $code = (int) wp_remote_retrieve_response_code($result);
+
+        // A 5xx is our outage, not the visitor's fault - surface it as
+        // unavailable so failsafe can let the submission through.
+        if ($code >= 500) {
+            return self::UNAVAILABLE;
         }
 
-        $payload_json = base64_decode(strtr($payload_b64, '-_', '+/'), true);
-        if ($payload_json === false) {
-            return null;
-        }
+        $body = json_decode((string) wp_remote_retrieve_body($result), true);
 
-        $payload = json_decode($payload_json, true);
-        if (! is_array($payload)) {
-            return null;
-        }
-
-        if ((int) ($payload['exp'] ?? 0) < time()) {
-            return null;
-        }
-
-        if (($payload['sk'] ?? '') !== $this->site_key) {
-            return null;
-        }
-
-        return $payload;
-    }
-
-    private function signature_matches(string $payload_b64, string $signature): bool
-    {
-        foreach ($this->secret_keys as $secret_key) {
-            $expected = hash_hmac('sha256', $payload_b64, $secret_key, true);
-            if (hash_equals($expected, $signature)) {
-                return true;
-            }
-        }
-
-        return false;
+        return is_array($body) && isset($body['success']) && $body['success'] === true
+            ? self::VERIFIED
+            : self::REJECTED;
     }
 }

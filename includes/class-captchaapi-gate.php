@@ -5,100 +5,89 @@ if (! defined('ABSPATH')) {
 }
 
 /**
- * Ties verification and replay protection together for a single request. Every
- * protected form runs the same check: read the attestation from the POST body,
- * confirm it is genuine and fresh, then consume its jti so it cannot be reused.
+ * Runs the verification for a single request. Every protected form reads the
+ * response the widget injected and asks the verifier whether captchaapi.eu
+ * accepts it. Single-use enforcement is the server's job now, so there is no
+ * local replay store.
  */
 class Captchaapi_Gate
 {
-    const FIELD = 'captcha_attestation';
+    const FIELD = 'captchaapi_response';
 
     private Captchaapi_Verifier $verifier;
 
-    private Captchaapi_Replay_Store $replay_store;
-
     private bool $failsafe;
 
-    private ?Captchaapi_Service $service;
+    /**
+     * @var array<string, bool>
+     */
+    private array $memo = [];
 
-    public function __construct(
-        Captchaapi_Verifier $verifier,
-        Captchaapi_Replay_Store $replay_store,
-        bool $failsafe = false,
-        ?Captchaapi_Service $service = null
-    ) {
-        $this->verifier     = $verifier;
-        $this->replay_store = $replay_store;
-        $this->failsafe     = $failsafe;
-        $this->service      = $service;
+    public function __construct(Captchaapi_Verifier $verifier, bool $failsafe = false)
+    {
+        $this->verifier = $verifier;
+        $this->failsafe = $failsafe;
     }
 
-    /**
-     * True for a genuine, unexpired, previously unused attestation. In failsafe
-     * mode it is also true when the service is unreachable: during an outage the
-     * widget cannot mint an attestation, so blocking would lock real users out of
-     * every form. The reachability check only runs after normal verification has
-     * already failed, so a valid submission never pays for it.
-     */
     public function passes(): bool
     {
-        return $this->check($this->posted_attestation());
+        return $this->check($this->posted_response());
     }
 
     /**
-     * Same check as passes(), but for an attestation the integration already has
-     * in hand. Fluent Forms (and similar) post the form fields nested inside a
-     * single "data" parameter, so the attestation never lands in $_POST directly;
+     * Same check as passes(), but for a response the integration already has in
+     * hand. Fluent Forms (and similar) post the form fields nested inside a
+     * single "data" parameter, so the response never lands in $_POST directly;
      * the integration reads it from the parsed form data and passes it here.
      */
-    public function passes_for(string $attestation): bool
+    public function passes_for(string $response): bool
     {
-        return $this->check($attestation);
+        return $this->check($response);
     }
 
     /**
-     * The attestation is HMAC-verified, so it is its own proof of authenticity and
-     * needs no separate nonce. In failsafe mode the check also succeeds when the
-     * service is unreachable: during an outage the widget cannot mint an
-     * attestation, so blocking would lock real users out of every form. The
-     * reachability check only runs after normal verification has failed, so a
-     * valid submission never pays for it.
+     * The response is single-use: the server consumes it on the first verify.
+     * A form plugin that validates twice in one request would fail the second
+     * call, so the verdict is memoized per response and the action fires once.
      */
-    private function check(string $attestation): bool
+    private function check(string $response): bool
     {
-        $passed = $this->evaluate($attestation);
+        if (! array_key_exists($response, $this->memo)) {
+            $this->memo[$response] = $this->evaluate($response);
 
-        /**
-         * Fires once per protected form submission with the verification result.
-         * Useful for logging or monitoring how often the gate passes or blocks.
-         *
-         * @param bool $passed Whether the submission cleared the gate.
-         */
-        do_action('captchaapi_verified', $passed);
-
-        return $passed;
-    }
-
-    private function evaluate(string $attestation): bool
-    {
-        if ($attestation !== '') {
-            $payload = $this->verifier->verify($attestation);
-            if ($payload !== null) {
-                $jti = (isset($payload['jti']) && is_string($payload['jti'])) ? $payload['jti'] : '';
-                $ttl = (int) ($payload['exp'] ?? 0) - time();
-
-                if ($this->replay_store->claim($jti, $ttl)) {
-                    return true;
-                }
-            }
+            /**
+             * Fires once per protected form submission with the verification result.
+             *
+             * @param bool $passed Whether the submission cleared the gate.
+             */
+            do_action('captchaapi_verified', $this->memo[$response]);
         }
 
-        return $this->failsafe
-            && $this->service !== null
-            && ! $this->service->is_reachable();
+        return $this->memo[$response];
     }
 
-    private function posted_attestation(): string
+    private function evaluate(string $response): bool
+    {
+        if ($response === '') {
+            return false;
+        }
+
+        $status = $this->verifier->verify($response);
+
+        if ($status === Captchaapi_Verifier::VERIFIED) {
+            return true;
+        }
+
+        // Only an unreachable service or a 5xx defers to failsafe; a definitive
+        // rejection always blocks.
+        if ($status === Captchaapi_Verifier::UNAVAILABLE) {
+            return $this->failsafe;
+        }
+
+        return false;
+    }
+
+    private function posted_response(): string
     {
         // phpcs:disable WordPress.Security.NonceVerification.Missing
         if (empty($_POST[self::FIELD])) {

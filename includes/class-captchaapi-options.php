@@ -86,6 +86,18 @@ class Captchaapi_Options
     }
 
     /**
+     * The secret sent as the Bearer token on verify. One key, not the list:
+     * the server accepts both the current and the pending key while a rotation
+     * is staged, so sending the current one (the first) has no swap-over window.
+     */
+    public function current_secret_key(): string
+    {
+        $keys = $this->secret_keys();
+
+        return $keys[0] ?? '';
+    }
+
+    /**
      * Base origin for the widget script and the API. The widget is loaded from
      * "{base}/captcha.js" and talks to "{base}/api/v1".
      */

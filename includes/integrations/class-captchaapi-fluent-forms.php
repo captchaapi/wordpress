@@ -46,7 +46,7 @@ class Captchaapi_Fluent_Forms
     public function verify($errors)
     {
         if (! $this->gate->passes_for($this->posted_attestation())) {
-            $errors['captcha_attestation'] = $this->error_message();
+            $errors['captchaapi_response'] = $this->error_message();
         }
 
         return $errors;
@@ -69,7 +69,7 @@ class Captchaapi_Fluent_Forms
         parse_str(wp_unslash($_POST['data']), $parsed);
         // phpcs:enable WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 
-        return isset($parsed['captcha_attestation']) ? sanitize_text_field((string) $parsed['captcha_attestation']) : '';
+        return isset($parsed['captchaapi_response']) ? sanitize_text_field((string) $parsed['captchaapi_response']) : '';
     }
 
     private function error_message(): string

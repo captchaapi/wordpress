@@ -11,6 +11,10 @@ if (! defined('ABSPATH')) {
  */
 class Captchaapi_Plugin
 {
+    const LEGACY_PURGE_HOOK = 'captchaapi_purge_expired';
+
+    const LEGACY_TABLE = 'captchaapi_used_attestations';
+
     private Captchaapi_Options $options;
 
     public function __construct(Captchaapi_Options $options)
@@ -20,7 +24,7 @@ class Captchaapi_Plugin
 
     public function boot(): void
     {
-        add_action(Captchaapi_Replay_Store::PURGE_HOOK, [$this, 'purge_expired']);
+        $this->maybe_upgrade();
 
         (new Captchaapi_Settings($this->options))->boot();
 
@@ -31,10 +35,11 @@ class Captchaapi_Plugin
         (new Captchaapi_Assets($this->options))->boot();
 
         $gate = new Captchaapi_Gate(
-            new Captchaapi_Verifier($this->options->secret_keys(), $this->options->site_key()),
-            new Captchaapi_Replay_Store(),
-            $this->options->failsafe(),
-            new Captchaapi_Service($this->options->widget_url())
+            new Captchaapi_Verifier(
+                $this->options->current_secret_key(),
+                $this->options->api_url() . '/captcha/verify'
+            ),
+            $this->options->failsafe()
         );
 
         (new Captchaapi_Core_Forms($this->options, $gate))->boot();
@@ -48,26 +53,46 @@ class Captchaapi_Plugin
         (new Captchaapi_Elementor_Forms($this->options, $gate))->boot();
     }
 
-    public function purge_expired(): void
+    /**
+     * One-time cleanup when upgrading from a version that kept a local
+     * single-use store. The server owns single-use now, so the table and its
+     * purge cron are dead weight; drop them and remember the version.
+     */
+    private function maybe_upgrade(): void
     {
-        (new Captchaapi_Replay_Store())->purge_expired();
+        if (get_option('captchaapi_version') === CAPTCHAAPI_VERSION) {
+            return;
+        }
+
+        self::remove_legacy_replay_store();
+
+        update_option('captchaapi_version', CAPTCHAAPI_VERSION);
     }
 
     public static function activate(): void
     {
-        Captchaapi_Replay_Store::create_table();
+        self::remove_legacy_replay_store();
 
-        if (! wp_next_scheduled(Captchaapi_Replay_Store::PURGE_HOOK)) {
-            wp_schedule_event(time() + HOUR_IN_SECONDS, 'hourly', Captchaapi_Replay_Store::PURGE_HOOK);
-        }
+        update_option('captchaapi_version', CAPTCHAAPI_VERSION);
     }
 
     public static function deactivate(): void
     {
-        $timestamp = wp_next_scheduled(Captchaapi_Replay_Store::PURGE_HOOK);
+        self::remove_legacy_replay_store();
+    }
+
+    public static function remove_legacy_replay_store(): void
+    {
+        $timestamp = wp_next_scheduled(self::LEGACY_PURGE_HOOK);
 
         if ($timestamp) {
-            wp_unschedule_event($timestamp, Captchaapi_Replay_Store::PURGE_HOOK);
+            wp_unschedule_event($timestamp, self::LEGACY_PURGE_HOOK);
         }
+
+        global $wpdb;
+
+        $table = $wpdb->prefix . self::LEGACY_TABLE;
+        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery, PluginCheck.Security.DirectDB.UnescapedDBParameter -- table name is a fixed prefix plus a constant string, not user input
+        $wpdb->query("DROP TABLE IF EXISTS {$table}");
     }
 }

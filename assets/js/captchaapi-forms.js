@@ -8,8 +8,8 @@
  *
  * It also preserves the submit button's name/value. The widget submits in submit
  * mode via HTMLFormElement.prototype.submit(), which never includes the button
- * that triggered the submit. Forms that key their handler on that name — every
- * WooCommerce account form does (login, register, wc_reset_password) — would
+ * that triggered the submit. Forms that key their handler on that name - every
+ * WooCommerce account form does (login, register, wc_reset_password) - would
  * otherwise never run. A capture-phase submit listener copies the active
  * submitter into a hidden input before the widget takes over.
  */

@@ -84,9 +84,8 @@ class Captchaapi_Settings
             wp_send_json_error(['message' => __('Add a site key and a secret key first.', 'captchaapi')]);
         }
 
-        // The secret key signs and verifies attestations with the same key, so a
-        // wrong secret cannot be caught locally. The most that helps here is
-        // spotting keys pasted into the wrong field.
+        // This check only pings the service for reachability, not the secret, so
+        // the most it can catch is keys pasted into the wrong field.
         if (strpos($site_key, 'sk_') === 0 || strpos($secret_keys[0], 'pk_') === 0) {
             wp_send_json_error(['message' => __('The keys look swapped: the site key should start with pk_ and the secret key with sk_.', 'captchaapi')]);
         }
@@ -386,7 +385,7 @@ class Captchaapi_Settings
                                     <?php esc_html_e('Let submissions through when captchaapi.eu is unreachable', 'captchaapi'); ?>
                                 </label>
                                 <p class="description">
-                                    <?php esc_html_e('During an outage the widget cannot produce an attestation, so strict mode would block every form. With this on, forms stay usable and protection resumes automatically once the service is back. Leave off for strict, fail-closed protection.', 'captchaapi'); ?>
+                                    <?php esc_html_e('During an outage the verify request cannot reach captchaapi.eu, so strict mode would block every form. With this on, forms stay usable and protection resumes automatically once the service is back. Leave off for strict, fail-closed protection.', 'captchaapi'); ?>
                                 </p>
                             </fieldset>
                         </td>

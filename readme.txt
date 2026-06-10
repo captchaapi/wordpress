@@ -4,7 +4,7 @@ Tags: captcha, recaptcha, gdpr, antispam, woocommerce
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.1.2
+Stable tag: 2.0.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -14,9 +14,9 @@ Cookieless, EU-hosted reCAPTCHA alternative for WooCommerce, WPForms, Fluent For
 
 Protects WooCommerce (login, registration, lost password, checkout), WPForms, Fluent Forms, Formidable Forms, Forminator and Contact Form 7 - cookieless, EU-hosted, no cookie banner required.
 
-A privacy-first alternative to reCAPTCHA: captchaapi.eu stops form spam without making your visitors click traffic lights. A free tier with commercial use allowed gets you started. The work happens in the background: the visitor's browser solves a small proof-of-work puzzle while they fill in the form, and a signed token rides along with the submission. There is nothing to solve and nothing to see.
+A privacy-first alternative to reCAPTCHA: captchaapi.eu stops form spam without making your visitors click traffic lights. A free tier with commercial use allowed gets you started. The work happens in the background: the visitor's browser solves a small proof-of-work puzzle while they fill in the form, and a token rides along with the submission. There is nothing to solve and nothing to see.
 
-Your server checks that token locally with your secret key. No request is sent back to captchaapi.eu when a form is submitted, so the check adds no network latency and keeps working even if our service is briefly unreachable.
+When a form is submitted, your server confirms that token with captchaapi.eu over a single request, secured by your secret key. It is the same model every hosted CAPTCHA uses, and it keeps the secret on your server, never in the browser.
 
 The service runs on hardware in the EU (Nuremberg, Germany). It sets no cookies and writes no per-visitor record to a database; the visitor's IP address is used only transiently for rate limiting and abuse detection.
 
@@ -38,10 +38,10 @@ Each surface can be turned on or off from the settings screen. Integration optio
 = How it works =
 
 1. The widget loads on the pages with a protected form and solves a proof-of-work puzzle in a Web Worker.
-2. On submit, it attaches a short-lived, signed attestation to the form.
-3. The plugin verifies the attestation with your secret key (an HMAC check) and rejects the submission if it is missing, forged, expired, or reused.
+2. On submit, it attaches the resulting token to the form.
+3. The plugin confirms the token with captchaapi.eu using your secret key and rejects the submission if the service does not accept it.
 
-Reuse is blocked with a single-use record per token. If your site has a persistent object cache (Redis or Memcached), that record lives there. Otherwise the plugin keeps a small table and clears expired rows on a schedule.
+Each token verifies exactly once - the service enforces single use - so the plugin keeps no local replay table and nothing to clean up on a schedule.
 
 = You need an account =
 
@@ -71,19 +71,19 @@ No. There is no image challenge and no checkbox. The proof-of-work runs in the b
 
 = Does form submission slow down? =
 
-The verification is a local HMAC check, so it adds no network round trip on submit. The browser does its proof-of-work in the background before the submit, usually in well under a second.
+Verification is a single server-to-server request on submit, with a short timeout. The browser does its proof-of-work in the background before the submit, usually in well under a second.
 
 = What happens if captchaapi.eu is unreachable? =
 
-By default the plugin fails closed: if the widget cannot produce an attestation, a protected form will not submit, so a missing attestation is rejected rather than waved through. If you would rather keep forms working during an outage, turn on the optional failsafe mode: it lets submissions through while captchaapi.eu is unreachable and automatically resumes strict protection once the service is back.
+By default the plugin fails closed: a missing or unverified token is rejected rather than waved through. If you would rather keep forms working during an outage, turn on the optional failsafe mode: when the verify request cannot reach captchaapi.eu, it lets submissions through and automatically resumes strict protection once the service is back.
 
 = Does it work with Contact Form 7? =
 
-Yes. Enable Contact Form 7 in the settings. The plugin acquires an attestation before Contact Form 7 sends the form and verifies it on the server.
+Yes. Enable Contact Form 7 in the settings. The plugin acquires a token before Contact Form 7 sends the form and verifies it on the server.
 
 = Which form plugins are supported? =
 
-WooCommerce, WPForms, Fluent Forms, Formidable Forms, and Forminator, in addition to Contact Form 7. Enable each from the settings screen; the option appears only when that plugin is active. The plugin attaches an attestation before the form is sent and verifies it on the server.
+WooCommerce, WPForms, Fluent Forms, Formidable Forms, and Forminator, in addition to Contact Form 7. Enable each from the settings screen; the option appears only when that plugin is active. The plugin attaches a token before the form is sent and verifies it on the server.
 
 = Do you set cookies or track visitors? =
 
@@ -109,17 +109,22 @@ This version targets single-site installs. Network signup through wp-signup.php 
 
 This plugin connects to captchaapi.eu, a third-party CAPTCHA service, to protect your forms from spam. It is required for the plugin to function.
 
-On any public page that contains a protected form, the plugin loads the service's widget script (captcha.js) from your configured captchaapi.eu endpoint. The visitor's browser then communicates with the captchaapi.eu API to perform a proof-of-work challenge and obtain a signed attestation that is attached to the form on submit. This happens for every visitor who loads a protected form.
+On any public page that contains a protected form, the plugin loads the service's widget script (captcha.js) from your configured captchaapi.eu endpoint. The visitor's browser then communicates with the captchaapi.eu API to perform a proof-of-work challenge and obtain a token that is attached to the form on submit. This happens for every visitor who loads a protected form.
 
-To issue and validate an attestation the service receives your public site key, the proof-of-work result, and - as with any HTTP request - the visitor's IP address. The IP address is used for rate limiting and abuse/bot detection (including a coarse, IP-derived country) and is processed transiently: a hashed form and aggregate counters are held briefly in a cache. No raw IP address and no per-visitor record are written to a database. The service sets no cookies. Data is processed on servers in the EU (Nuremberg, Germany).
+To issue and validate a token the service receives your public site key, the proof-of-work result, and - as with any HTTP request - the visitor's IP address. The IP address is used for rate limiting and abuse/bot detection (including a coarse, IP-derived country) and is processed transiently: a hashed form and aggregate counters are held briefly in a cache. No raw IP address and no per-visitor record are written to a database. The service sets no cookies. Data is processed on servers in the EU (Nuremberg, Germany).
 
-Verification of the attestation on submit is performed locally on your server with your secret key; no request is sent back to captchaapi.eu at that point.
+When a protected form is submitted, your server sends the token to the captchaapi.eu /verify endpoint, authenticated with your secret key, and trusts the service's accept-or-reject answer. The secret key stays on your server and is never sent to the browser.
 
 * Service provider: captchaapi.eu
 * Terms of Service: https://captchaapi.eu/legal/terms
 * Privacy Policy: https://captchaapi.eu/legal/privacy
 
 == Changelog ==
+
+= 2.0.0 =
+* Verification is now a server-to-server call. The plugin confirms each token with the captchaapi.eu /verify endpoint using your secret key, instead of checking a signed token locally. The form field is now `captchaapi_response`.
+* The service enforces single use, so the local replay table and its hourly purge cron are gone - both are removed automatically when you upgrade.
+* Failsafe mode now keys off the verify request: when captchaapi.eu cannot be reached on submit, failsafe lets the form through; a definite rejection always blocks.
 
 = 1.1.2 =
 * Refreshed the plugin icon and directory banner with the new captchaapi.eu branding.

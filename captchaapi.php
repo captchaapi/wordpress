@@ -3,7 +3,7 @@
  * Plugin Name:       GDPR Cookieless CAPTCHA for WooCommerce & Forms - captchaapi.eu
  * Plugin URI:        https://captchaapi.eu/docs
  * Description:       Cookieless, GDPR-friendly CAPTCHA hosted in the EU - a privacy-first reCAPTCHA alternative. Protects login, registration, lost-password, comments, WooCommerce, and the popular form plugins.
- * Version:           1.1.2
+ * Version:           2.0.0
  * Requires at least: 6.0
  * Requires PHP:      7.4
  * Author:            captchaapi.eu
@@ -18,14 +18,13 @@ if (! defined('ABSPATH')) {
     exit;
 }
 
-define('CAPTCHAAPI_VERSION', '1.1.2');
+define('CAPTCHAAPI_VERSION', '2.0.0');
 define('CAPTCHAAPI_PLUGIN_FILE', __FILE__);
 define('CAPTCHAAPI_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('CAPTCHAAPI_PLUGIN_URL', plugin_dir_url(__FILE__));
 
 require_once CAPTCHAAPI_PLUGIN_DIR . 'includes/class-captchaapi-options.php';
 require_once CAPTCHAAPI_PLUGIN_DIR . 'includes/class-captchaapi-verifier.php';
-require_once CAPTCHAAPI_PLUGIN_DIR . 'includes/class-captchaapi-replay-store.php';
 require_once CAPTCHAAPI_PLUGIN_DIR . 'includes/class-captchaapi-service.php';
 require_once CAPTCHAAPI_PLUGIN_DIR . 'includes/class-captchaapi-gate.php';
 require_once CAPTCHAAPI_PLUGIN_DIR . 'includes/class-captchaapi-assets.php';
