@@ -26,8 +26,19 @@ jobs:
         with:
           path: captchaapi
 
+      # The check runs against the repository, but the zip is built with
+      # .distignore applied. Without these, every run reports development files
+      # that never ship - and three standing warnings are how a real one gets
+      # overlooked. Keep this list in step with .distignore.
       - name: Run Plugin Check
         uses: WordPress/plugin-check-action@v1.1.7
         with:
           build-dir: ./captchaapi
           slug: captchaapi
+          exclude-directories: |
+            .github
+            .githooks
+            .wordpress-org
+          exclude-files: |
+            .gitignore
+            .distignore
