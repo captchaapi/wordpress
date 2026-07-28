@@ -39,6 +39,7 @@ jobs:
             .github
             .githooks
             .wordpress-org
+            tools
             languages/.build
           exclude-files: |
             .gitignore

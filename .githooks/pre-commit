@@ -101,7 +101,7 @@ if [ -z "${SKIP_PLUGIN_CHECK:-}" ] && [ -d "$wp_path" ]; then
   if [ ${#wp_cli[@]} -gt 0 ]; then
     echo "▶ plugin check"
     check_output=$(cd "$wp_path" && "${wp_cli[@]}" plugin check captchaapi --format=csv \
-      --exclude-directories=.github,.githooks,.wordpress-org,.claude,.idea,languages \
+      --exclude-directories=.github,.githooks,.wordpress-org,.claude,.idea,tools,languages \
       --exclude-files=.gitignore,.distignore,.DS_Store,README.md 2>/dev/null || true)
 
     # Errors block a release, warnings do not - the same line the workflow draws.

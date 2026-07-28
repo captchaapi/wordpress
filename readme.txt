@@ -4,7 +4,7 @@ Tags: captcha, recaptcha, spam, contact form, gdpr
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 2.1.0
+Stable tag: 2.1.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -154,7 +154,20 @@ When you open the plugin's settings screen, it asks the captchaapi.eu /api/v1/st
 * Terms of Service: https://captchaapi.eu/legal/terms
 * Privacy Policy: https://captchaapi.eu/legal/privacy
 
+== Screenshots ==
+
+1. The settings screen. Keys are in place, and the Activity panel shows what the plugin has actually been doing - on this site and against your account allowance.
+2. Choose which forms to protect. WordPress login, registration, lost password and comments are always there; every supported form plugin appears as soon as it is active.
+3. A protected login form. No puzzle, no checkbox, nothing for the visitor to solve - just a line confirming the protection is running.
+4. Test connection checks that captchaapi.eu is reachable and that your site key is valid, before a real visitor finds out for you.
+5. Decide what shows under protected forms, and whether submissions go through during an outage on our side.
+6. When the account cannot issue challenges, the plugin says so on every admin screen instead of failing quietly.
+
 == Changelog ==
+
+= 2.1.1 =
+* The plugin directory listing now has screenshots. An invisible captcha is hard to show a picture of, so they show the things you can see: the Activity panel, which forms are covered, the line under a protected login form, and the notice that appears when the account stops issuing challenges.
+* No changes to the plugin itself. If you are already on 2.1.0, this update only refreshes what the directory shows.
 
 = 2.1.0 =
 * New: an Activity panel on the settings screen. It answers the question an invisible captcha cannot answer on its own - is this thing working? Two figures come from your own site (submissions verified, submissions turned away) and one from captchaapi.eu (how much of your account's monthly allowance is gone). They are kept apart on purpose: a challenge that is issued and never submitted counts for the service and not for your site, so adding them together would produce a number that means nothing.

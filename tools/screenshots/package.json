@@ -1,0 +1,12 @@
+{
+  "name": "captchaapi-screenshots",
+  "private": true,
+  "description": "Regenerates the WordPress.org screenshots from a live test install",
+  "scripts": {
+    "shoot": "node shoot.js",
+    "restore": "node shoot.js --restore"
+  },
+  "devDependencies": {
+    "playwright": "^1.62.0"
+  }
+}

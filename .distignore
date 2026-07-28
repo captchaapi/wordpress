@@ -7,6 +7,7 @@
 .idea
 .wordpress-org
 .distignore
+tools
 README.md
 languages/.build
 .DS_Store
