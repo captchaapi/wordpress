@@ -49,15 +49,10 @@ class Captchaapi_Forminator
             $submit_errors = [];
         }
 
-        if (! $this->gate->passes()) {
-            $submit_errors[] = ['captchaapi' => $this->error_message()];
+        if (! $this->gate->passes('forminator')) {
+            $submit_errors[] = ['captchaapi' => $this->gate->error_message()];
         }
 
         return $submit_errors;
-    }
-
-    private function error_message(): string
-    {
-        return __('Captcha verification failed. Reload the page and try again.', 'captchaapi');
     }
 }

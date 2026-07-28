@@ -47,17 +47,12 @@ class Captchaapi_Elementor_Forms
      */
     public function verify($record, $ajax_handler): void
     {
-        if ($this->gate->passes()) {
+        if ($this->gate->passes('elementor')) {
             return;
         }
 
         if (is_object($ajax_handler) && method_exists($ajax_handler, 'add_error_message')) {
-            $ajax_handler->add_error_message($this->error_message());
+            $ajax_handler->add_error_message($this->gate->error_message());
         }
-    }
-
-    private function error_message(): string
-    {
-        return __('Captcha verification failed. Reload the page and try again.', 'captchaapi');
     }
 }

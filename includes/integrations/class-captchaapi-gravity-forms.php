@@ -48,7 +48,7 @@ class Captchaapi_Gravity_Forms
      */
     public function verify($validation_result)
     {
-        if (! $this->gate->passes()) {
+        if (! $this->gate->passes('gravity_forms')) {
             $validation_result['is_valid'] = false;
         }
 

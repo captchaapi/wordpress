@@ -6,6 +6,8 @@ if (! defined('WP_UNINSTALL_PLUGIN')) {
 
 delete_option('captchaapi_options');
 delete_option('captchaapi_version');
+delete_option('captchaapi_last_service_state');
+delete_transient('captchaapi_service_state');
 
 // Drop the legacy single-use store if an older version left it behind. The
 // server owns single-use now, so there is no table or purge cron in 2.0.

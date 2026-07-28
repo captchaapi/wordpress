@@ -4,7 +4,7 @@ Tags: captcha, recaptcha, spam, contact form, gdpr
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 2.0.2
+Stable tag: 2.0.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -96,6 +96,12 @@ Verification is a single server-to-server request on submit, with a short timeou
 
 By default the plugin fails closed: a missing or unverified token is rejected rather than waved through. If you would rather keep forms working during an outage, turn on the optional failsafe mode: when the verify request cannot reach captchaapi.eu, it lets submissions through and automatically resumes strict protection once the service is back.
 
+Logging in and resetting a password are the exception. Those two forms are never blocked by anything on our side, so an outage or an account problem can never shut you out of your own site.
+
+= What happens when my free tier runs out? =
+
+Protected forms are rejected until you top up, and a notice in your dashboard tells you so. Protection never drops silently to "no captcha" - you would think you were protected while you were not. Logging in and resetting a password keep working, so you can always reach your settings and your captchaapi.eu account.
+
 = Does it work with Contact Form 7? =
 
 Yes. Enable Contact Form 7 in the settings. The plugin acquires a token before Contact Form 7 sends the form and verifies it on the server.
@@ -139,6 +145,12 @@ When a protected form is submitted, your server sends the token to the captchaap
 * Privacy Policy: https://captchaapi.eu/legal/privacy
 
 == Changelog ==
+
+= 2.0.3 =
+* Fixed: logging in and resetting a password are never blocked by the state of your captchaapi.eu account. Previously a used-up free tier, a suspended account, or an unreachable service could reject the wp-login.php form and shut you out of your own site.
+* Rejections now say why. Administrators see the reason next to the error, and a notice in the dashboard explains what to do when protected forms are being turned away.
+* Failsafe mode is now clearly scoped to outages on our side. When the account cannot issue challenges at all - free tier used up, account suspended, project inactive - protected forms are rejected regardless of the setting, so protection never drops silently.
+* Verification and connection checks time out after 3 seconds instead of 5, so a slow service does not hold up a submission.
 
 = 2.0.2 =
 * Stopped marking product names and the captchaapi.eu brand as translatable strings, so the translation list only contains real interface text.

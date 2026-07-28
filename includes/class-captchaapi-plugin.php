@@ -34,11 +34,16 @@ class Captchaapi_Plugin
 
         (new Captchaapi_Assets($this->options))->boot();
 
+        $service = new Captchaapi_Service($this->options);
+
+        (new Captchaapi_Notices($this->options, $service))->boot();
+
         $gate = new Captchaapi_Gate(
             new Captchaapi_Verifier(
                 $this->options->current_secret_key(),
                 $this->options->api_url() . '/captcha/verify'
             ),
+            $service,
             $this->options->failsafe()
         );
 

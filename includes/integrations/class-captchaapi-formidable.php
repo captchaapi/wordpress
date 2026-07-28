@@ -45,15 +45,10 @@ class Captchaapi_Formidable
      */
     public function verify($errors, $values = [])
     {
-        if (! $this->gate->passes()) {
-            $errors['captchaapi'] = $this->error_message();
+        if (! $this->gate->passes('formidable')) {
+            $errors['captchaapi'] = $this->gate->error_message();
         }
 
         return $errors;
-    }
-
-    private function error_message(): string
-    {
-        return __('Captcha verification failed. Reload the page and try again.', 'captchaapi');
     }
 }

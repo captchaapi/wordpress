@@ -45,19 +45,14 @@ class Captchaapi_WPForms
      */
     public function verify($fields, $entry, $form_data): void
     {
-        if ($this->gate->passes()) {
+        if ($this->gate->passes('wpforms')) {
             return;
         }
 
         $form_id = isset($form_data['id']) ? absint($form_data['id']) : 0;
 
         if ($form_id > 0 && isset(wpforms()->process)) {
-            wpforms()->process->errors[$form_id]['header'] = $this->error_message();
+            wpforms()->process->errors[$form_id]['header'] = $this->gate->error_message();
         }
-    }
-
-    private function error_message(): string
-    {
-        return __('Captcha verification failed. Reload the page and try again.', 'captchaapi');
     }
 }

@@ -387,6 +387,9 @@ class Captchaapi_Settings
                                 <p class="description">
                                     <?php esc_html_e('During an outage the verify request cannot reach captchaapi.eu, so strict mode would block every form. With this on, forms stay usable and protection resumes automatically once the service is back. Leave off for strict, fail-closed protection.', 'captchaapi'); ?>
                                 </p>
+                                <p class="description">
+                                    <?php esc_html_e('This setting covers outages on our side only. When the account itself cannot issue challenges - the free tier is used up, the account is suspended, the project is inactive - protected forms are always rejected until you resolve it. Logging in and resetting a password are the exception: they stay open so you can never be shut out of your own site.', 'captchaapi'); ?>
+                                </p>
                             </fieldset>
                         </td>
                     </tr>

@@ -60,8 +60,8 @@ class Captchaapi_WooCommerce
      */
     public function verify_login($validation_error)
     {
-        if (! $this->gate->passes()) {
-            $validation_error->add('captchaapi_failed', $this->error_message());
+        if (! $this->gate->passes('login')) {
+            $validation_error->add('captchaapi_failed', $this->gate->error_message());
         }
 
         return $validation_error;
@@ -74,8 +74,8 @@ class Captchaapi_WooCommerce
      */
     public function verify_registration($validation_error)
     {
-        if (! $this->gate->passes()) {
-            $validation_error->add('captchaapi_failed', $this->error_message());
+        if (! $this->gate->passes('register')) {
+            $validation_error->add('captchaapi_failed', $this->gate->error_message());
         }
 
         return $validation_error;
@@ -83,13 +83,8 @@ class Captchaapi_WooCommerce
 
     public function verify_checkout(): void
     {
-        if (! $this->gate->passes()) {
-            wc_add_notice($this->error_message(), 'error');
+        if (! $this->gate->passes('woo_checkout')) {
+            wc_add_notice($this->gate->error_message(), 'error');
         }
-    }
-
-    private function error_message(): string
-    {
-        return __('Captcha verification failed. Reload the page and try again.', 'captchaapi');
     }
 }

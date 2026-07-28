@@ -50,11 +50,11 @@ class Captchaapi_Core_Forms
             return $user;
         }
 
-        if ($this->gate->passes()) {
+        if ($this->gate->passes('login')) {
             return $user;
         }
 
-        return new WP_Error('captchaapi_failed', $this->error_message());
+        return new WP_Error('captchaapi_failed', $this->gate->error_message());
     }
 
     /**
@@ -64,8 +64,8 @@ class Captchaapi_Core_Forms
      */
     public function verify_registration($errors)
     {
-        if ($this->is_form_submission() && ! $this->gate->passes()) {
-            $errors->add('captchaapi_failed', $this->error_message());
+        if ($this->is_form_submission() && ! $this->gate->passes('register')) {
+            $errors->add('captchaapi_failed', $this->gate->error_message());
         }
 
         return $errors;
@@ -76,8 +76,8 @@ class Captchaapi_Core_Forms
      */
     public function verify_lost_password($errors): void
     {
-        if ($this->is_form_submission() && is_wp_error($errors) && ! $this->gate->passes()) {
-            $errors->add('captchaapi_failed', $this->error_message());
+        if ($this->is_form_submission() && is_wp_error($errors) && ! $this->gate->passes('lost_password')) {
+            $errors->add('captchaapi_failed', $this->gate->error_message());
         }
     }
 
@@ -102,9 +102,9 @@ class Captchaapi_Core_Forms
             return $comment_data;
         }
 
-        if (! $this->gate->passes()) {
+        if (! $this->gate->passes('comments')) {
             wp_die(
-                esc_html($this->error_message()),
+                esc_html($this->gate->error_message()),
                 esc_html__('Comment blocked', 'captchaapi'),
                 ['response' => 403, 'back_link' => true]
             );
@@ -125,10 +125,5 @@ class Captchaapi_Core_Forms
 
         return ! (defined('XMLRPC_REQUEST') && XMLRPC_REQUEST)
             && ! (defined('REST_REQUEST') && REST_REQUEST);
-    }
-
-    private function error_message(): string
-    {
-        return __('Captcha verification failed. Reload the page and try again.', 'captchaapi');
     }
 }

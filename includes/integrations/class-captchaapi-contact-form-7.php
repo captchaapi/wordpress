@@ -50,6 +50,6 @@ class Captchaapi_Contact_Form_7
             return true;
         }
 
-        return ! $this->gate->passes();
+        return ! $this->gate->passes('cf7');
     }
 }
