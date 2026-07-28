@@ -2,20 +2,67 @@ name: Update WordPress.org assets
 
 # Syncs the plugin directory assets (icon, banner, screenshots) from
 # .wordpress-org/ to the WordPress.org SVN /assets folder. These live only in
-# SVN, never in the shipped plugin zip. Runs whenever .wordpress-org/ changes
-# on main, or manually.
+# SVN, never in the shipped plugin zip.
+#
+# Runs when .wordpress-org/ changes on main, after a deploy has published a
+# release, or manually. The deploy trigger is there for a release that lands
+# later than the assets it belongs with; on the common path, where one commit
+# carries both, the push run does the work and the deploy run finds nothing
+# left to change.
 on:
   push:
     branches: [main]
     paths:
       - ".wordpress-org/**"
+  workflow_run:
+    workflows: ["Deploy to WordPress.org"]
+    types: [completed]
   workflow_dispatch:
+
+# A release commit can trigger this workflow twice, from the push and from the
+# deploy. One at a time, and never cancelled - a half-finished SVN commit is
+# worse than a slow one. The deploy deliberately does not share this group: it
+# would then queue behind a run that is waiting for it.
+concurrency:
+  group: wordpress-org-svn
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  actions: read
 
 jobs:
   assets:
     name: Sync plugin directory assets
+    # A deploy that failed leaves trunk in a state nothing should be synced
+    # against, and its own failure is the thing worth looking at.
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     steps:
+      # The concurrency group above only serialises runs that have already
+      # started. A release commit fires this workflow from the push and the
+      # deploy from the release seconds apart, in either order, so whichever
+      # gets there first has to stand aside for the deploy.
+      - name: Wait for an in-flight deploy
+        if: github.event_name != 'workflow_run'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # The release is published moments after the push that triggered this
+          # run, so a first look can be too early to see the deploy at all.
+          sleep 30
+          for _ in $(seq 1 60); do
+            running=$(gh run list --repo "$GITHUB_REPOSITORY" --workflow deploy.yml \
+              --json status --jq '[.[] | select(.status != "completed")] | length')
+            if [ "$running" = "0" ]; then
+              exit 0
+            fi
+            echo "A deploy is running; waiting for it to finish before touching SVN."
+            sleep 20
+          done
+          echo "::error::A deploy has been running for 20 minutes. Not syncing assets on top of it."
+          exit 1
+
       - name: Checkout
         uses: actions/checkout@v6
 
