@@ -98,6 +98,12 @@
         link.target = '_blank';
         link.rel = 'noopener noreferrer';
 
+        // The visible text is "Powered by" beside a decorative logo, which on
+        // its own tells a screen reader nothing about where the link goes.
+        if (config.aria) {
+            link.setAttribute('aria-label', config.aria);
+        }
+
         if (config.logo) {
             var logo = document.createElement('img');
             logo.className = 'captchaapi-badge__logo';
@@ -129,11 +135,46 @@
         }
     }
 
+    /**
+     * Attaches to everything matching now, and to anything that shows up later.
+     *
+     * A contact form can arrive after the page does - pulled into a popup, or
+     * rendered on demand by a page builder - and a one-off pass at load would
+     * miss it. Submission is already safe there, because those listeners are
+     * delegated on the document; this is the badge catching up. A delegated
+     * focus listener rather than a MutationObserver: nobody submits a form they
+     * have not touched, and it costs nothing until they do.
+     */
+    function watch(selector) {
+        if (!selector) {
+            return;
+        }
+
+        attachAll(selector);
+
+        document.addEventListener('focusin', function (event) {
+            var form = event.target && event.target.closest ? event.target.closest('form') : null;
+
+            if (form && form.matches && form.matches(selector)) {
+                attachAndWait(form);
+            }
+        }, true);
+    }
+
+    function attachAll(selector) {
+        var forms = document.querySelectorAll(selector);
+
+        for (var i = 0; i < forms.length; i++) {
+            attachAndWait(forms[i]);
+        }
+    }
+
     // Published on the config object the plugin already puts here, so the
     // integration scripts have one place to go for both.
     window.captchaapiBadge = window.captchaapiBadge || {};
     window.captchaapiBadge.attach = attach;
     window.captchaapiBadge.attachAndWait = attachAndWait;
+    window.captchaapiBadge.watch = watch;
 
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', addBadge);

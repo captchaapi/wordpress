@@ -96,15 +96,11 @@
     function badge() {
         var match = selector();
 
-        if (!match || !window.captchaapiBadge || typeof window.captchaapiBadge.attachAndWait !== 'function') {
+        if (!match || !window.captchaapiBadge || typeof window.captchaapiBadge.watch !== 'function') {
             return;
         }
 
-        var forms = document.querySelectorAll(match);
-
-        for (var i = 0; i < forms.length; i++) {
-            window.captchaapiBadge.attachAndWait(forms[i]);
-        }
+        window.captchaapiBadge.watch(match);
     }
 
     if (document.readyState === 'loading') {

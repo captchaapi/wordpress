@@ -222,8 +222,8 @@ class Captchaapi_Gate
                 // integrations hand this message to form plugins that print it
                 // without escaping. It arrives over the network, so it is not
                 // ours to trust however well we think we know the sender.
-                /* translators: %s: error code returned by the captchaapi.eu service. */
                 return sprintf(
+                    /* translators: %s: error code returned by the captchaapi.eu service. */
                     __('The captchaapi.eu service rejected the request (%s).', 'captchaapi'),
                     esc_html($code)
                 );

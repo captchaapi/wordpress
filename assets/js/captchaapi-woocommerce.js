@@ -73,15 +73,11 @@
     // it on its own - the badge is attached here and put into standby, and
     // every state after that arrives through solve({ form }).
     function badge() {
-        if (!window.captchaapiBadge || typeof window.captchaapiBadge.attachAndWait !== 'function') {
+        if (!window.captchaapiBadge || typeof window.captchaapiBadge.watch !== 'function') {
             return;
         }
 
-        var forms = document.querySelectorAll(SELECTOR);
-
-        for (var i = 0; i < forms.length; i++) {
-            window.captchaapiBadge.attachAndWait(forms[i]);
-        }
+        window.captchaapiBadge.watch(SELECTOR);
     }
 
     if (document.readyState === 'loading') {

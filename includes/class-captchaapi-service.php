@@ -39,6 +39,13 @@ class Captchaapi_Service
     const CACHE_TTL = 5 * MINUTE_IN_SECONDS;
 
     /**
+     * How stale a recorded problem may get before it is written again. Long
+     * enough that a busy site is not writing an option per request, short
+     * enough that "when did we last see this" stays true.
+     */
+    const REFRESH_AFTER = 5 * MINUTE_IN_SECONDS;
+
+    /**
      * Error codes that mean the site cannot get challenges until the owner does
      * something about it. Anything else from the challenge endpoint is treated
      * as our problem.
@@ -103,14 +110,25 @@ class Captchaapi_Service
      */
     public function remember(string $state, string $code = ''): void
     {
+        $stored = get_option(self::STATE_OPTION);
+        $stored = is_array($stored) ? $stored : null;
+        $blocked = $stored !== null && ($stored['state'] ?? '') === self::NOT_ENFORCEABLE;
+
+        // A passing outage must not bury an account problem. One is a blip that
+        // hides itself after an hour; the other needs the owner to act, and only
+        // a submission that verifies says it is over. This governs the cached
+        // verdict as much as the stored one: the cache is what the gate reads,
+        // so letting a blip overwrite it there would quietly hand an over-limit
+        // account the failsafe treatment it must never get.
+        if ($state === self::UNAVAILABLE && $blocked) {
+            return;
+        }
+
         // A real verification just told us more than a probe could, so the
         // cached verdict moves with it. Leaving it behind would let a stale
         // "everything is fine" answer outlive the account going over its limit,
         // and vice versa, for the length of the cache.
         set_transient(self::TRANSIENT, ['state' => $state, 'code' => $code], self::CACHE_TTL);
-
-        $stored = get_option(self::STATE_OPTION);
-        $stored = is_array($stored) ? $stored : null;
 
         if ($state === self::ENFORCING) {
             // Only on a real transition. Otherwise every verified submission on
@@ -122,17 +140,16 @@ class Captchaapi_Service
             return;
         }
 
-        // A passing outage must not bury an account problem. One is a blip that
-        // hides itself after an hour; the other needs the owner to act and is
-        // cleared only by a submission that verifies.
-        if ($state === self::UNAVAILABLE && $stored !== null && ($stored['state'] ?? '') === self::NOT_ENFORCEABLE) {
-            return;
-        }
+        // An unchanged verdict is rewritten only now and then. Writing every
+        // time would mean a wp_options write per request during an outage -
+        // every bot hitting the login form - but never writing would freeze the
+        // timestamp at the first sighting, and the outage notice hides itself
+        // once that is an hour old. It would vanish mid-outage.
+        $unchanged = $stored !== null
+            && ($stored['state'] ?? '') === $state
+            && ($stored['code'] ?? '') === $code;
 
-        // Unchanged verdicts are not rewritten. The timestamp would differ every
-        // time, so without this an outage means a wp_options write per request -
-        // including every bot hitting the login form.
-        if ($stored !== null && ($stored['state'] ?? '') === $state && ($stored['code'] ?? '') === $code) {
+        if ($unchanged && (time() - (int) ($stored['time'] ?? 0)) < self::REFRESH_AFTER) {
             return;
         }
 
@@ -185,17 +202,34 @@ class Captchaapi_Service
             'body'    => wp_json_encode(['site_key' => $site_key]),
         ]);
 
+        return self::classify($response);
+    }
+
+    /**
+     * Turns a challenge-endpoint reply into a state. Shared so the settings
+     * screen's "Test connection" cannot reach a different conclusion from the
+     * probe about the very same response.
+     *
+     * @param array<string, mixed>|WP_Error $response
+     *
+     * @return array{0: string, 1: string} state and the error code behind it
+     */
+    public static function classify($response): array
+    {
         if (is_wp_error($response)) {
             return [self::UNAVAILABLE, ''];
         }
 
-        $code = (int) wp_remote_retrieve_response_code($response);
+        $status = (int) wp_remote_retrieve_response_code($response);
 
-        if ($code === 200) {
+        if ($status === 200) {
             return [self::ENFORCING, ''];
         }
 
-        if ($code >= 500) {
+        // A 5xx is ours whatever the body claims. An error body cached by a
+        // proxy during an incident could otherwise be read as an account
+        // problem and stick around until a submission verifies.
+        if ($status >= 500) {
             return [self::UNAVAILABLE, ''];
         }
 

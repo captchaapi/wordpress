@@ -25,8 +25,9 @@
     box-sizing: border-box;
     /* clear only works in normal flow. Block themes and page builders lay forms
        out with flex or grid, where an appended element becomes an item on the
-       last row instead of a row of its own; these two claim the full width
-       there and do nothing at all outside such a container. */
+       last row instead of a row of its own. grid-column spans every column;
+       flex-basis claims the full width, which puts the badge on its own line
+       wherever the container wraps. Both are inert outside such a container. */
     flex-basis: 100%;
     grid-column: 1 / -1;
     padding: 16px 0 0;

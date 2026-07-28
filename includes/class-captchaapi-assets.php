@@ -211,6 +211,7 @@ class Captchaapi_Assets
             // browser to whatever build shipped alongside this plugin version
             // and hide the next widget deploy until the plugin releases again.
             // Its own ETag and Last-Modified decide when a browser refetches.
+            // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion -- Deliberate: the service versions this file, we do not.
             wp_register_script('captchaapi', $this->options->widget_url(), $deps, null, $in_footer);
             wp_add_inline_script('captchaapi', $this->config_script(), 'before');
         }
@@ -308,6 +309,8 @@ class Captchaapi_Assets
             'href'      => $this->options->site_url(),
             'logo'      => CAPTCHAAPI_PLUGIN_URL . 'assets/img/captchaapi-logo.svg',
             'label'     => __('Powered by', 'captchaapi'),
+            /* translators: %s: captchaapi.eu, the service name. */
+            'aria'      => sprintf(__('Powered by %s', 'captchaapi'), 'captchaapi.eu'),
         ];
     }
 
