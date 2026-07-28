@@ -21,8 +21,15 @@ permissions:
   contents: write
 
 jobs:
+  # The directory would reject a release that fails Plugin Check, so run it here
+  # rather than finding out from a review email.
+  check:
+    name: Plugin Check
+    uses: ./.github/workflows/plugin-check.yml
+
   deploy:
     name: Build zip and deploy to WordPress.org
+    needs: check
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

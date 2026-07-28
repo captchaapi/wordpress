@@ -1,0 +1,33 @@
+name: Plugin Check
+
+# Runs the official WordPress.org Plugin Check against the plugin, the same tool
+# the directory reviewers use. Runs on every push and pull request, and again as
+# a gate in front of the deploy workflow so a release cannot go out with an error
+# the directory would reject.
+#
+# Errors fail the run; warnings are reported as annotations without failing it.
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_call:
+  workflow_dispatch:
+
+jobs:
+  plugin-check:
+    name: WordPress.org Plugin Check
+    runs-on: ubuntu-latest
+    steps:
+      # Checked out under the plugin slug: the action derives the plugin folder
+      # name from this directory, and a folder that does not match the slug
+      # trips the directory's own naming checks.
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          path: captchaapi
+
+      - name: Run Plugin Check
+        uses: WordPress/plugin-check-action@v1.1.7
+        with:
+          build-dir: ./captchaapi
+          slug: captchaapi
