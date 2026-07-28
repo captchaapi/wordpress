@@ -218,8 +218,15 @@ class Captchaapi_Gate
             case '':
                 return __('The captchaapi.eu service could not be reached.', 'captchaapi');
             default:
+                // An unrecognised code is repeated back to the reader, and the
+                // integrations hand this message to form plugins that print it
+                // without escaping. It arrives over the network, so it is not
+                // ours to trust however well we think we know the sender.
                 /* translators: %s: error code returned by the captchaapi.eu service. */
-                return sprintf(__('The captchaapi.eu service rejected the request (%s).', 'captchaapi'), $code);
+                return sprintf(
+                    __('The captchaapi.eu service rejected the request (%s).', 'captchaapi'),
+                    esc_html($code)
+                );
         }
     }
 

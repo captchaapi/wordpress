@@ -104,16 +104,32 @@ class Captchaapi_Settings
             'body'    => wp_json_encode(['site_key' => $site_key]),
         ]);
 
+        // Pressing this button is what an owner does after fixing a problem, so
+        // it is also what has to clear the notice. Recording the verdict here
+        // means the answer on screen and the banner above it agree.
+        $service = new Captchaapi_Service($this->options);
+
         if (is_wp_error($response)) {
+            $service->remember(Captchaapi_Service::UNAVAILABLE);
+
             wp_send_json_error(['message' => __('Could not reach the service. Check the API base URL and that captchaapi.eu is up.', 'captchaapi')]);
         }
 
         if ((int) wp_remote_retrieve_response_code($response) === 200) {
+            $service->remember(Captchaapi_Service::ENFORCING);
+
             wp_send_json_success(['message' => __('Connected. Your site key is valid.', 'captchaapi')]);
         }
 
         $body       = json_decode((string) wp_remote_retrieve_body($response), true);
         $error_code = (is_array($body) && isset($body['error_code'])) ? (string) $body['error_code'] : '';
+
+        $service->remember(
+            in_array($error_code, Captchaapi_Service::BLOCKING_CODES, true)
+                ? Captchaapi_Service::NOT_ENFORCEABLE
+                : Captchaapi_Service::UNAVAILABLE,
+            $error_code
+        );
 
         wp_send_json_error(['message' => $this->test_error_message($error_code)]);
     }

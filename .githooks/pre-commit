@@ -41,25 +41,31 @@ fi
 # The deploy workflow refuses to publish when the plugin header, the readme
 # "Stable tag" and the release tag disagree. Catching it here costs nothing and
 # saves a failed release.
+# Falls back to the working copy when a path is not in the index. Failure is
+# tolerated so a deleted file reaches the explicit check below instead of
+# aborting on set -e with a raw "No such file" from cat.
 staged_file() {
-  git show ":$1" 2>/dev/null || cat "$1"
+  git show ":$1" 2>/dev/null || cat "$1" 2>/dev/null || true
 }
 
-header_version=$(staged_file captchaapi.php | grep -i '^[[:space:]]*\*[[:space:]]*Version:' | head -1 | sed 's/.*:[[:space:]]*//' | tr -d '\r')
-stable_tag=$(staged_file readme.txt | grep -i '^Stable tag:' | head -1 | sed 's/.*:[[:space:]]*//' | tr -d '\r')
+header_version=$(staged_file captchaapi.php | grep -i '^[[:space:]]*\*[[:space:]]*Version:' | head -1 | sed 's/.*:[[:space:]]*//' | tr -d '\r' || true)
+stable_tag=$(staged_file readme.txt | grep -i '^Stable tag:' | head -1 | sed 's/.*:[[:space:]]*//' | tr -d '\r' || true)
+# The constant is the cache-busting version on every enqueued asset; a bump that
+# forgets it ships stale scripts to every visitor.
+constant=$(staged_file captchaapi.php | grep -oE "CAPTCHAAPI_VERSION', *'[^']+'" | head -1 | sed "s/.*'\\([^']*\\)'$/\\1/" || true)
 
-if [ -z "$header_version" ] || [ -z "$stable_tag" ]; then
+if [ -z "$header_version" ] || [ -z "$stable_tag" ] || [ -z "$constant" ]; then
   echo "✗ could not read the version from captchaapi.php or readme.txt" >&2
   exit 1
 fi
 
-if [ "$header_version" != "$stable_tag" ]; then
-  echo "✗ version mismatch: plugin header is $header_version, readme \"Stable tag\" is $stable_tag" >&2
-  echo "  Both must match before a release can be deployed." >&2
+if [ "$header_version" != "$stable_tag" ] || [ "$header_version" != "$constant" ]; then
+  echo "✗ version mismatch: plugin header $header_version, readme \"Stable tag\" $stable_tag, CAPTCHAAPI_VERSION $constant" >&2
+  echo "  All three must match before a release can be deployed." >&2
   exit 1
 fi
 
-echo "✓ version headers agree ($header_version)"
+echo "✓ versions agree ($header_version)"
 
 # ── 3. Coding standards, when the tooling is installed ───────────────────────
 # Optional on purpose: a fresh clone has no composer setup, and the hook should

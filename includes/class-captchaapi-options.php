@@ -140,6 +140,16 @@ class Captchaapi_Options
         return $this->base_url() . '/api/v1';
     }
 
+    /**
+     * Where a person goes, as opposed to where the plugin talks. Deliberately
+     * not base_url(): a self-hosted proxy changes where the API lives, not
+     * where the account, the dashboard, and the plans are.
+     */
+    public function site_url(): string
+    {
+        return self::DEFAULT_BASE_URL;
+    }
+
     public function is_configured(): bool
     {
         return $this->site_key() !== '' && $this->secret_keys() !== [];

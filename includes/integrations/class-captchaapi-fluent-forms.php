@@ -45,7 +45,7 @@ class Captchaapi_Fluent_Forms
      */
     public function verify($errors)
     {
-        if (! $this->gate->passes_for($this->posted_attestation(), 'fluent_forms')) {
+        if (! $this->gate->passes_for($this->posted_attestation(), 'fluentform')) {
             $errors['captchaapi_response'] = $this->gate->error_message();
         }
 

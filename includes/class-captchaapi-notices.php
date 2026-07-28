@@ -69,7 +69,7 @@ class Captchaapi_Notices
             esc_html__('captchaapi.eu is not protecting your forms.', 'captchaapi'),
             esc_html(Captchaapi_Gate::reason_for($code)),
             esc_html__('Protected forms are being rejected until this is resolved. Logging in and resetting a password keep working.', 'captchaapi'),
-            esc_url($this->options->api_url()),
+            esc_url($this->options->site_url()),
             esc_html__('Open your captchaapi.eu dashboard', 'captchaapi')
         );
     }

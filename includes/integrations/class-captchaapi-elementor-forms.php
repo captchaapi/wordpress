@@ -47,7 +47,7 @@ class Captchaapi_Elementor_Forms
      */
     public function verify($record, $ajax_handler): void
     {
-        if ($this->gate->passes('elementor')) {
+        if ($this->gate->passes('elementor_forms')) {
             return;
         }
 

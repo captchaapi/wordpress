@@ -103,9 +103,36 @@ class Captchaapi_Service
      */
     public function remember(string $state, string $code = ''): void
     {
-        if ($state === self::ENFORCING) {
-            delete_option(self::STATE_OPTION);
+        // A real verification just told us more than a probe could, so the
+        // cached verdict moves with it. Leaving it behind would let a stale
+        // "everything is fine" answer outlive the account going over its limit,
+        // and vice versa, for the length of the cache.
+        set_transient(self::TRANSIENT, ['state' => $state, 'code' => $code], self::CACHE_TTL);
 
+        $stored = get_option(self::STATE_OPTION);
+        $stored = is_array($stored) ? $stored : null;
+
+        if ($state === self::ENFORCING) {
+            // Only on a real transition. Otherwise every verified submission on
+            // the site would run a delete for a row that is not there.
+            if ($stored !== null) {
+                delete_option(self::STATE_OPTION);
+            }
+
+            return;
+        }
+
+        // A passing outage must not bury an account problem. One is a blip that
+        // hides itself after an hour; the other needs the owner to act and is
+        // cleared only by a submission that verifies.
+        if ($state === self::UNAVAILABLE && $stored !== null && ($stored['state'] ?? '') === self::NOT_ENFORCEABLE) {
+            return;
+        }
+
+        // Unchanged verdicts are not rewritten. The timestamp would differ every
+        // time, so without this an outage means a wp_options write per request -
+        // including every bot hitting the login form.
+        if ($stored !== null && ($stored['state'] ?? '') === $state && ($stored['code'] ?? '') === $code) {
             return;
         }
 

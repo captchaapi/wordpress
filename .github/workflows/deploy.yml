@@ -46,9 +46,12 @@ jobs:
           fi
           STABLE=$(grep -i '^Stable tag:' readme.txt | sed 's/.*:[[:space:]]*//' | tr -d '\r')
           HEADER=$(grep -i 'Version:' captchaapi.php | head -1 | sed 's/.*:[[:space:]]*//' | tr -d '\r')
-          echo "version=$VERSION  Stable tag=$STABLE  header Version=$HEADER"
-          if [ "$VERSION" != "$STABLE" ] || [ "$VERSION" != "$HEADER" ]; then
-            echo "::error::Version mismatch - the version, readme \"Stable tag\" and the plugin header \"Version\" must all match before deploying."
+          # The constant is the cache-busting version on every enqueued asset, so
+          # it has to move with the rest or stale scripts ship to every visitor.
+          CONST=$(grep -oE "CAPTCHAAPI_VERSION', *'[^']+'" captchaapi.php | head -1 | sed "s/.*'\([^']*\)'$/\1/")
+          echo "version=$VERSION  Stable tag=$STABLE  header Version=$HEADER  constant=$CONST"
+          if [ "$VERSION" != "$STABLE" ] || [ "$VERSION" != "$HEADER" ] || [ "$VERSION" != "$CONST" ]; then
+            echo "::error::Version mismatch - the version, readme \"Stable tag\", the plugin header \"Version\" and CAPTCHAAPI_VERSION must all match before deploying."
             exit 1
           fi
           echo "VERSION=$VERSION" >> "$GITHUB_ENV"

@@ -39,6 +39,8 @@ jobs:
             .github
             .githooks
             .wordpress-org
+            languages/.build
           exclude-files: |
             .gitignore
             .distignore
+            README.md
