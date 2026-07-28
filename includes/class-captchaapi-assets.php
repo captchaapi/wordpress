@@ -54,7 +54,7 @@ class Captchaapi_Assets
             return;
         }
 
-        $this->enqueue_widget($forms, true);
+        $this->enqueue_widget($forms, wp_list_pluck($forms, 'selector'), true);
     }
 
     public function enqueue_frontend(): void
@@ -92,7 +92,12 @@ class Captchaapi_Assets
             return;
         }
 
-        $this->enqueue_widget($forms, false);
+        // The selectors handed over here are the ones the badge script attaches
+        // to by itself, which is only ever the marker-driven forms. Contact
+        // Form 7, the checkout, and the form plugins report through
+        // solve({ form }), so their own scripts attach a badge once the widget
+        // has loaded and they can check it is a build that reports at all.
+        $this->enqueue_widget($forms, wp_list_pluck($forms, 'selector'), false, true);
 
         if ($ajax_selectors !== []) {
             wp_enqueue_script(
@@ -176,10 +181,18 @@ class Captchaapi_Assets
     }
 
     /**
-     * @param array<int, array{selector: string}> $marker_forms
+     * @param array<int, array{selector: string}> $marker_forms    Forms the marker tags with data-captcha.
+     * @param array<int, string>                  $badge_selectors Forms the badge script attaches to on its own.
+     * @param bool                                $badge_on_demand Whether an integration script on this page will
+     *                                                             attach badges of its own, so the badge script is
+     *                                                             needed even when it has no selectors to work from.
      */
-    private function enqueue_widget(array $marker_forms, bool $in_head): void
-    {
+    private function enqueue_widget(
+        array $marker_forms,
+        array $badge_selectors,
+        bool $in_head,
+        bool $badge_on_demand = false
+    ): void {
         $in_footer = ! $in_head;
         $deps      = [];
 
@@ -188,8 +201,17 @@ class Captchaapi_Assets
             $deps[] = 'captchaapi-forms';
         }
 
+        if ($this->register_badge($badge_selectors, $in_footer, $badge_on_demand)) {
+            $deps[] = 'captchaapi-badge';
+        }
+
         if (! wp_script_is('captchaapi', 'registered')) {
-            wp_register_script('captchaapi', $this->options->widget_url(), $deps, CAPTCHAAPI_VERSION, $in_footer);
+            // No version on the widget. It is the service's file, released on
+            // the service's schedule; stamping it with ours would pin every
+            // browser to whatever build shipped alongside this plugin version
+            // and hide the next widget deploy until the plugin releases again.
+            // Its own ETag and Last-Modified decide when a browser refetches.
+            wp_register_script('captchaapi', $this->options->widget_url(), $deps, null, $in_footer);
             wp_add_inline_script('captchaapi', $this->config_script(), 'before');
         }
 
@@ -214,42 +236,45 @@ class Captchaapi_Assets
         );
         wp_add_inline_script(
             'captchaapi-forms',
-            'window.captchaapiForms = ' . wp_json_encode($marker_forms) . ';'
-            . 'window.captchaapiBadge = ' . wp_json_encode($this->badge_config()) . ';',
+            'window.captchaapiForms = ' . wp_json_encode($marker_forms) . ';',
             'before'
         );
-
-        $this->enqueue_badge_style();
     }
 
     /**
-     * @return array<string, string>
+     * Registers the badge as a dependency of the widget, so the status element
+     * exists before the widget starts reporting into it.
+     *
+     * @param array<int, string> $selectors
+     *
+     * @return bool Whether the widget should depend on it.
      */
-    private function badge_config(): array
-    {
-        $badge = $this->options->badge();
-
-        if ($badge === Captchaapi_Options::BADGE_NONE) {
-            return ['mode' => Captchaapi_Options::BADGE_NONE];
-        }
-
-        if ($badge === Captchaapi_Options::BADGE_STATUS) {
-            return ['mode' => Captchaapi_Options::BADGE_STATUS];
-        }
-
-        return [
-            'mode'  => Captchaapi_Options::BADGE_BRANDED,
-            'href'  => $this->options->api_url(),
-            'logo'  => CAPTCHAAPI_PLUGIN_URL . 'assets/img/captchaapi-logo.svg',
-            'label' => __('Powered by', 'captchaapi'),
-        ];
-    }
-
-    private function enqueue_badge_style(): void
+    private function register_badge(array $selectors, bool $in_footer, bool $on_demand = false): bool
     {
         if ($this->options->badge() === Captchaapi_Options::BADGE_NONE) {
-            return;
+            return false;
         }
+
+        if ($selectors === [] && ! $on_demand) {
+            return false;
+        }
+
+        if (wp_script_is('captchaapi-badge', 'registered')) {
+            return true;
+        }
+
+        wp_register_script(
+            'captchaapi-badge',
+            CAPTCHAAPI_PLUGIN_URL . 'assets/js/captchaapi-badge.js',
+            [],
+            CAPTCHAAPI_VERSION,
+            $in_footer
+        );
+        wp_add_inline_script(
+            'captchaapi-badge',
+            'window.captchaapiBadge = ' . wp_json_encode($this->badge_config($selectors)) . ';',
+            'before'
+        );
 
         wp_enqueue_style(
             'captchaapi-badge',
@@ -257,6 +282,33 @@ class Captchaapi_Assets
             [],
             CAPTCHAAPI_VERSION
         );
+
+        return true;
+    }
+
+    /**
+     * @param array<int, string> $selectors
+     *
+     * @return array<string, mixed>
+     */
+    private function badge_config(array $selectors): array
+    {
+        $badge = $this->options->badge();
+
+        if ($badge === Captchaapi_Options::BADGE_STATUS) {
+            return [
+                'mode'      => Captchaapi_Options::BADGE_STATUS,
+                'selectors' => $selectors,
+            ];
+        }
+
+        return [
+            'mode'      => Captchaapi_Options::BADGE_BRANDED,
+            'selectors' => $selectors,
+            'href'      => $this->options->site_url(),
+            'logo'      => CAPTCHAAPI_PLUGIN_URL . 'assets/img/captchaapi-logo.svg',
+            'label'     => __('Powered by', 'captchaapi'),
+        ];
     }
 
     private function config_script(): string
@@ -270,12 +322,23 @@ class Captchaapi_Assets
     }
 
     /**
+     * The widget and everything it depends on are deferred together.
+     *
+     * Deferring only the widget would invert the order it relies on: a plain
+     * script runs while the page is still parsing, so the marker and the badge
+     * would postpone their work to DOMContentLoaded, while the deferred widget
+     * runs before that event and could scan a page that has not been marked yet.
+     * Deferred scripts execute in document order, so deferring all three
+     * restores the sequence the dependency chain describes.
+     *
      * @param string $tag
      * @param string $handle
      */
     public function defer_widget($tag, $handle): string
     {
-        if ($handle === 'captchaapi' && strpos($tag, ' defer') === false) {
+        $deferred = ['captchaapi', 'captchaapi-forms', 'captchaapi-badge'];
+
+        if (in_array($handle, $deferred, true) && strpos($tag, ' defer') === false) {
             $tag = str_replace(' src=', ' defer src=', $tag);
         }
 

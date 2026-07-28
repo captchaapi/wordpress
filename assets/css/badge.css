@@ -11,39 +11,60 @@
  * beside the submit button (the WordPress login form floats "Remember me" next
  * to it), and clearance swallows a top margin - so the gap has to be padding on
  * the element that clears, while the border belongs to the one inside it.
+ *
+ * Every class is repeated in its own selector. Form plugins ship blanket resets
+ * over their whole subtree - WPForms has `div.wpforms-container-full *` with
+ * `font-size: 100%; padding: 0` - and those outrank a single class. Doubling it
+ * wins on specificity without reaching for !important, which would take the
+ * override away from a site owner who wants one.
  */
 
-.captchaapi-badge {
+.captchaapi-badge.captchaapi-badge {
     clear: both;
     width: 100%;
     box-sizing: border-box;
-    padding-top: 16px;
+    /* clear only works in normal flow. Block themes and page builders lay forms
+       out with flex or grid, where an appended element becomes an item on the
+       last row instead of a row of its own; these two claim the full width
+       there and do nothing at all outside such a container. */
+    flex-basis: 100%;
+    grid-column: 1 / -1;
+    padding: 16px 0 0;
     margin: 0;
+    border: 0;
     font-size: 12px;
     line-height: 1.4;
     color: inherit;
 }
 
-.captchaapi-badge__inner {
+.captchaapi-badge__inner.captchaapi-badge__inner {
     display: flex;
     align-items: center;
     gap: 0.5em;
+    padding: 0;
+    margin: 0;
+    font-size: inherit;
+    line-height: inherit;
 }
 
-.captchaapi-badge__status {
+.captchaapi-badge__status.captchaapi-badge__status {
     display: inline-flex;
     align-items: center;
     gap: 0.4em;
+    padding: 0;
+    margin: 0;
+    font-size: inherit;
     opacity: 0.75;
 }
 
 /* The widget writes its own icon into the status element; keep it in step with
    the text rather than at whatever intrinsic size it arrives. */
-.captchaapi-badge__status svg,
-.captchaapi-badge__status img {
+.captchaapi-badge__status.captchaapi-badge__status svg,
+.captchaapi-badge__status.captchaapi-badge__status img {
     width: 1.1em;
     height: 1.1em;
     flex-shrink: 0;
+    margin: 0;
 }
 
 /*
@@ -53,11 +74,11 @@
  * a line of text, so it needs more room above it before it stops looking bolted
  * onto the submit button.
  */
-.captchaapi-badge--branded {
+.captchaapi-badge--branded.captchaapi-badge--branded {
     padding-top: 22px;
 }
 
-.captchaapi-badge--branded .captchaapi-badge__inner {
+.captchaapi-badge--branded.captchaapi-badge--branded .captchaapi-badge__inner {
     min-height: 32px;
     padding: 0 0.75em;
     border: 1px solid currentColor;
@@ -65,31 +86,35 @@
     opacity: 0.85;
 }
 
-.captchaapi-badge__link {
+.captchaapi-badge__link.captchaapi-badge__link {
     display: inline-flex;
     align-items: center;
     gap: 0.45em;
+    padding: 0;
     color: inherit;
+    font-size: inherit;
     text-decoration: none;
     box-shadow: none;
 }
 
-.captchaapi-badge__link:hover,
-.captchaapi-badge__link:focus {
+.captchaapi-badge__link.captchaapi-badge__link:hover,
+.captchaapi-badge__link.captchaapi-badge__link:focus {
     text-decoration: underline;
 }
 
-.captchaapi-badge__logo {
+.captchaapi-badge__logo.captchaapi-badge__logo {
     width: 18px;
     height: 18px;
     border-radius: 3px;
     flex-shrink: 0;
+    margin: 0;
 }
 
-.captchaapi-badge__separator {
+.captchaapi-badge__separator.captchaapi-badge__separator {
     width: 1px;
     align-self: stretch;
     margin: 0.4em 0;
+    padding: 0;
     background: currentColor;
     opacity: 0.35;
 }

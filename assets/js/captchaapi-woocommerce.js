@@ -50,7 +50,7 @@
         form.__captchaapiSolving = true;
         var submitter = event.submitter || null;
 
-        window.captchaapi.solve().then(function (response) {
+        window.captchaapi.solve({ form: form }).then(function (response) {
             setResponse(form, response);
             form.__captchaapiCleared = true;
             form.requestSubmit(submitter || undefined);
@@ -68,4 +68,25 @@
             handle(form, event);
         }
     }, true);
+
+    // This form is never marked with data-captcha, so the widget does not find
+    // it on its own - the badge is attached here and put into standby, and
+    // every state after that arrives through solve({ form }).
+    function badge() {
+        if (!window.captchaapiBadge || typeof window.captchaapiBadge.attachAndWait !== 'function') {
+            return;
+        }
+
+        var forms = document.querySelectorAll(SELECTOR);
+
+        for (var i = 0; i < forms.length; i++) {
+            window.captchaapiBadge.attachAndWait(forms[i]);
+        }
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', badge);
+    } else {
+        badge();
+    }
 })();

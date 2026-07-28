@@ -90,7 +90,7 @@ No. There is no image challenge and no checkbox. The proof-of-work runs in the b
 
 = What do visitors see on a protected form? =
 
-One line of small text under the first protected form on the page, saying whether the protection is running. No box, no background, no checkbox to click. Because there is no puzzle to solve, without it there would be no sign at all that the form is protected - not for your visitors and not for you.
+One line of small text under each protected form, saying whether the protection is running. No box, no background, no checkbox to click. Because there is no puzzle to solve, without it there would be no sign at all that the form is protected - not for your visitors and not for you.
 
 You can add our logo and a link to captchaapi.eu to that line, or turn the whole thing off, under Settings -> captchaapi.eu. The version with our logo is a credit on your public pages, so it is never on unless you pick it.
 
@@ -146,6 +146,8 @@ To issue and validate a token the service receives your public site key, the pro
 
 When a protected form is submitted, your server sends the token to the captchaapi.eu /verify endpoint, authenticated with your secret key, and trusts the service's accept-or-reject answer. The secret key stays on your server and is never sent to the browser.
 
+Your server also asks the captchaapi.eu /captcha/challenge endpoint whether it would still issue challenges for your site key. This happens in two situations: when you press "Test connection" on the settings screen, and when a protected form arrives with no token at all - which can mean either a stripped submission or a widget that never received a challenge, and the plugin has to know which before it rejects a real visitor. The request sends your public site key and your site's address; the answer is cached for a few minutes, so a burst of submissions does not become a burst of requests. No visitor data is sent.
+
 * Service provider: captchaapi.eu
 * Terms of Service: https://captchaapi.eu/legal/terms
 * Privacy Policy: https://captchaapi.eu/legal/privacy
@@ -153,9 +155,10 @@ When a protected form is submitted, your server sends the token to the captchaap
 == Changelog ==
 
 = 2.0.4 =
-* Protected forms now carry a single line reporting whether the protection is running. There is no puzzle and no checkbox to see, so until now neither you nor your visitors had any sign the plugin was working. It draws no box and no background, and it appears once per page.
+* Every protected form now carries a single line reporting whether the protection is running - WordPress core, WooCommerce including the checkout, and all seven supported form plugins. There is no puzzle and no checkbox to see, so until now neither you nor your visitors had any sign the plugin was working. It draws no box and no background, and each form gets its own: a WooCommerce account page shows one under the login form and one under the registration form.
 * Optional: the same line can carry our logo and a link to captchaapi.eu. That is a credit on your public pages, so it is off unless you choose it under Settings -> captchaapi.eu.
 * Both can be turned off entirely.
+* The captchaapi.eu widget script is no longer stamped with the plugin's version number. It is the service's file on the service's release schedule, and tying it to ours meant a browser kept the build that shipped with your plugin version until the next plugin update.
 
 = 2.0.3 =
 * Fixed: logging in and resetting a password are never blocked by the state of your captchaapi.eu account. Previously a used-up free tier, a suspended account, or an unreachable service could reject the wp-login.php form and shut you out of your own site.
