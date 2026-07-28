@@ -21,6 +21,23 @@ class Captchaapi_Options
     const DEFAULT_BASE_URL = 'https://captchaapi.eu';
 
     /**
+     * What the visitor sees under a protected form.
+     *
+     * BADGE_STATUS is a plain line of text reporting whether the form is
+     * protected - no brand, no link. It is on by default because without it a
+     * cookieless, puzzle-free captcha leaves nothing at all to see, and neither
+     * the visitor nor the site owner can tell it is working.
+     *
+     * BADGE_BRANDED adds our logo and a link, which makes it a credit display.
+     * WordPress.org requires those to be opt-in, so it is never the default.
+     */
+    const BADGE_NONE = 'none';
+
+    const BADGE_STATUS = 'status';
+
+    const BADGE_BRANDED = 'branded';
+
+    /**
      * @return array<string, mixed>
      */
     public function all(): array
@@ -39,6 +56,7 @@ class Captchaapi_Options
             'site_key'              => '',
             'secret_key'            => '',
             'base_url'              => self::DEFAULT_BASE_URL,
+            'badge'                 => self::BADGE_STATUS,
             'protect_login'         => true,
             'protect_register'      => true,
             'protect_lost_password' => true,
@@ -130,6 +148,20 @@ class Captchaapi_Options
     public function failsafe(): bool
     {
         return ! empty($this->all()['failsafe']);
+    }
+
+    /**
+     * One of the BADGE_* constants. An unrecognised stored value falls back to
+     * the status line rather than to the branded one, so a corrupted option can
+     * never turn a credit display on by itself.
+     */
+    public function badge(): string
+    {
+        $badge = (string) ($this->all()['badge'] ?? self::BADGE_STATUS);
+
+        return in_array($badge, [self::BADGE_NONE, self::BADGE_STATUS, self::BADGE_BRANDED], true)
+            ? $badge
+            : self::BADGE_STATUS;
     }
 
     public function protects(string $surface): bool

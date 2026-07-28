@@ -214,8 +214,48 @@ class Captchaapi_Assets
         );
         wp_add_inline_script(
             'captchaapi-forms',
-            'window.captchaapiForms = ' . wp_json_encode($marker_forms) . ';',
+            'window.captchaapiForms = ' . wp_json_encode($marker_forms) . ';'
+            . 'window.captchaapiBadge = ' . wp_json_encode($this->badge_config()) . ';',
             'before'
+        );
+
+        $this->enqueue_badge_style();
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    private function badge_config(): array
+    {
+        $badge = $this->options->badge();
+
+        if ($badge === Captchaapi_Options::BADGE_NONE) {
+            return ['mode' => Captchaapi_Options::BADGE_NONE];
+        }
+
+        if ($badge === Captchaapi_Options::BADGE_STATUS) {
+            return ['mode' => Captchaapi_Options::BADGE_STATUS];
+        }
+
+        return [
+            'mode'  => Captchaapi_Options::BADGE_BRANDED,
+            'href'  => $this->options->api_url(),
+            'logo'  => CAPTCHAAPI_PLUGIN_URL . 'assets/img/captchaapi-logo.svg',
+            'label' => __('Powered by', 'captchaapi'),
+        ];
+    }
+
+    private function enqueue_badge_style(): void
+    {
+        if ($this->options->badge() === Captchaapi_Options::BADGE_NONE) {
+            return;
+        }
+
+        wp_enqueue_style(
+            'captchaapi-badge',
+            CAPTCHAAPI_PLUGIN_URL . 'assets/css/badge.css',
+            [],
+            CAPTCHAAPI_VERSION
         );
     }
 

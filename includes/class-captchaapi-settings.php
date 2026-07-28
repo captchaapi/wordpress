@@ -216,6 +216,13 @@ class Captchaapi_Settings
 
         $output['failsafe'] = ! empty($input['failsafe']);
 
+        $badge = isset($input['badge']) ? sanitize_key($input['badge']) : '';
+        $output['badge'] = in_array(
+            $badge,
+            [Captchaapi_Options::BADGE_NONE, Captchaapi_Options::BADGE_STATUS, Captchaapi_Options::BADGE_BRANDED],
+            true
+        ) ? $badge : Captchaapi_Options::BADGE_STATUS;
+
         return $output;
     }
 
@@ -376,6 +383,38 @@ class Captchaapi_Settings
 
                 <h2 class="title"><?php esc_html_e('Behavior', 'captchaapi'); ?></h2>
                 <table class="form-table" role="presentation">
+                    <tr>
+                        <th scope="row"><?php esc_html_e('Under protected forms', 'captchaapi'); ?></th>
+                        <td>
+                            <fieldset>
+                                <?php $badge = $this->options->badge(); ?>
+                                <label>
+                                    <input type="radio" name="<?php echo esc_attr($name); ?>[badge]"
+                                        value="<?php echo esc_attr(Captchaapi_Options::BADGE_STATUS); ?>"
+                                        <?php checked($badge, Captchaapi_Options::BADGE_STATUS); ?>>
+                                    <?php esc_html_e('Show whether the form is protected', 'captchaapi'); ?>
+                                </label><br>
+                                <label>
+                                    <input type="radio" name="<?php echo esc_attr($name); ?>[badge]"
+                                        value="<?php echo esc_attr(Captchaapi_Options::BADGE_BRANDED); ?>"
+                                        <?php checked($badge, Captchaapi_Options::BADGE_BRANDED); ?>>
+                                    <?php esc_html_e('Show the same, plus our logo and a link to captchaapi.eu', 'captchaapi'); ?>
+                                </label><br>
+                                <label>
+                                    <input type="radio" name="<?php echo esc_attr($name); ?>[badge]"
+                                        value="<?php echo esc_attr(Captchaapi_Options::BADGE_NONE); ?>"
+                                        <?php checked($badge, Captchaapi_Options::BADGE_NONE); ?>>
+                                    <?php esc_html_e('Show nothing', 'captchaapi'); ?>
+                                </label>
+                                <p class="description">
+                                    <?php esc_html_e('One line under the first protected form on the page. There is no puzzle and no checkbox to see, so without it neither you nor your visitors can tell the protection is running.', 'captchaapi'); ?>
+                                </p>
+                                <p class="description">
+                                    <?php esc_html_e('The second option is a credit: it puts our name and a link on your public pages. It is entirely optional and off unless you pick it.', 'captchaapi'); ?>
+                                </p>
+                            </fieldset>
+                        </td>
+                    </tr>
                     <tr>
                         <th scope="row"><?php esc_html_e('Failsafe mode', 'captchaapi'); ?></th>
                         <td>

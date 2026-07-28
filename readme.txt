@@ -4,7 +4,7 @@ Tags: captcha, recaptcha, spam, contact form, gdpr
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 2.0.3
+Stable tag: 2.0.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -88,6 +88,12 @@ During a key rotation, list the current and the new key together, separated by a
 
 No. There is no image challenge and no checkbox. The proof-of-work runs in the browser while the form is being filled in.
 
+= What do visitors see on a protected form? =
+
+One line of small text under the first protected form on the page, saying whether the protection is running. No box, no background, no checkbox to click. Because there is no puzzle to solve, without it there would be no sign at all that the form is protected - not for your visitors and not for you.
+
+You can add our logo and a link to captchaapi.eu to that line, or turn the whole thing off, under Settings -> captchaapi.eu. The version with our logo is a credit on your public pages, so it is never on unless you pick it.
+
 = Does form submission slow down? =
 
 Verification is a single server-to-server request on submit, with a short timeout. The browser does its proof-of-work in the background before the submit, usually in well under a second.
@@ -145,6 +151,11 @@ When a protected form is submitted, your server sends the token to the captchaap
 * Privacy Policy: https://captchaapi.eu/legal/privacy
 
 == Changelog ==
+
+= 2.0.4 =
+* Protected forms now carry a single line reporting whether the protection is running. There is no puzzle and no checkbox to see, so until now neither you nor your visitors had any sign the plugin was working. It draws no box and no background, and it appears once per page.
+* Optional: the same line can carry our logo and a link to captchaapi.eu. That is a credit on your public pages, so it is off unless you choose it under Settings -> captchaapi.eu.
+* Both can be turned off entirely.
 
 = 2.0.3 =
 * Fixed: logging in and resetting a password are never blocked by the state of your captchaapi.eu account. Previously a used-up free tier, a suspended account, or an unreachable service could reject the wp-login.php form and shut you out of your own site.
