@@ -2,6 +2,7 @@
 # (e.g. `wp dist-archive`). Keeps dev-only artifacts out of the WP.org zip.
 .git
 .github
+.githooks
 .gitignore
 .idea
 .wordpress-org

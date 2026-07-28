@@ -1,0 +1,71 @@
+#!/usr/bin/env bash
+#
+# Shared pre-commit gate: lints the staged PHP and guards the version headers a
+# release depends on. Runs for everyone; needs nothing beyond php on PATH.
+#
+# Owner-local checks (author identity + AI-trace scan) are NOT tracked; they live
+# in .git/hooks/pre-commit.local and are invoked below when present, so a fresh
+# clone only ever runs the quality gate.
+#
+# Enable once per clone:  git config core.hooksPath .githooks
+#
+set -euo pipefail
+
+# ── Optional local-only checks (owner's machine, fail-fast before the gate) ───
+# --git-common-dir points at the real .git (unaffected by core.hooksPath), so the
+# local hook is found in .git/hooks even while this shared hook runs from .githooks.
+local_hook="$(git rev-parse --git-common-dir)/hooks/pre-commit.local"
+if [ -x "$local_hook" ]; then
+  "$local_hook" "$@"
+fi
+
+# ── 1. Syntax check every staged PHP file ────────────────────────────────────
+# Lints the staged blob, not the working copy, so a fix that is not staged yet
+# cannot mask a broken commit.
+staged_php=$(git diff --cached --name-only --diff-filter=ACMR -- '*.php' || true)
+
+if [ -n "$staged_php" ]; then
+  echo "▶ php -l on staged files"
+  while IFS= read -r file; do
+    [ -n "$file" ] || continue
+    if ! git show ":$file" | php -l >/dev/null 2>&1; then
+      echo "✗ syntax error in $file" >&2
+      git show ":$file" | php -l >&2 || true
+      exit 1
+    fi
+  done <<<"$staged_php"
+  echo "✓ php -l passed"
+fi
+
+# ── 2. Version headers agree ─────────────────────────────────────────────────
+# The deploy workflow refuses to publish when the plugin header, the readme
+# "Stable tag" and the release tag disagree. Catching it here costs nothing and
+# saves a failed release.
+staged_file() {
+  git show ":$1" 2>/dev/null || cat "$1"
+}
+
+header_version=$(staged_file captchaapi.php | grep -i '^[[:space:]]*\*[[:space:]]*Version:' | head -1 | sed 's/.*:[[:space:]]*//' | tr -d '\r')
+stable_tag=$(staged_file readme.txt | grep -i '^Stable tag:' | head -1 | sed 's/.*:[[:space:]]*//' | tr -d '\r')
+
+if [ -z "$header_version" ] || [ -z "$stable_tag" ]; then
+  echo "✗ could not read the version from captchaapi.php or readme.txt" >&2
+  exit 1
+fi
+
+if [ "$header_version" != "$stable_tag" ]; then
+  echo "✗ version mismatch: plugin header is $header_version, readme \"Stable tag\" is $stable_tag" >&2
+  echo "  Both must match before a release can be deployed." >&2
+  exit 1
+fi
+
+echo "✓ version headers agree ($header_version)"
+
+# ── 3. Coding standards, when the tooling is installed ───────────────────────
+# Optional on purpose: a fresh clone has no composer setup, and the hook should
+# not fail over a missing dev dependency.
+if command -v phpcs >/dev/null 2>&1 && [ -n "$staged_php" ]; then
+  echo "▶ phpcs"
+  echo "$staged_php" | tr '\n' ' ' | xargs phpcs
+  echo "✓ phpcs passed"
+fi
