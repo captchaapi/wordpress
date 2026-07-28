@@ -4,7 +4,7 @@ Tags: captcha, recaptcha, spam, contact form, gdpr
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 2.0.4
+Stable tag: 2.1.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -148,13 +148,17 @@ When a protected form is submitted, your server sends the token to the captchaap
 
 Your server also asks the captchaapi.eu /captcha/challenge endpoint whether it would still issue challenges for your site key. This happens in two situations: when you press "Test connection" on the settings screen, and when a protected form arrives with no token at all - which can mean either a stripped submission or a widget that never received a challenge, and the plugin has to know which before it rejects a real visitor. The request sends your public site key and your site's address; the answer is cached for a few minutes, so a burst of submissions does not become a burst of requests. No visitor data is sent.
 
+When you open the plugin's settings screen, it asks the captchaapi.eu /api/v1/stats endpoint how much of your account's monthly allowance has been used, so the Activity panel can show it. The request is authenticated with your secret key and carries nothing about your visitors. It runs only for administrators, only on that screen, and the answer is cached for twelve hours.
+
 * Service provider: captchaapi.eu
 * Terms of Service: https://captchaapi.eu/legal/terms
 * Privacy Policy: https://captchaapi.eu/legal/privacy
 
 == Changelog ==
 
-= 2.0.4 =
+= 2.1.0 =
+* New: an Activity panel on the settings screen. It answers the question an invisible captcha cannot answer on its own - is this thing working? Two figures come from your own site (submissions verified, submissions turned away) and one from captchaapi.eu (how much of your account's monthly allowance is gone). They are kept apart on purpose: a challenge that is issued and never submitted counts for the service and not for your site, so adding them together would produce a number that means nothing.
+* When the service says it cannot issue challenges, the panel leads with that rather than with the figures. Account totals lag live traffic by up to fifteen minutes, and "4,800 of 5,000" reads as headroom to a site whose forms are already being turned away.
 * Every protected form now carries a single line reporting whether the protection is running - WordPress core, WooCommerce including the checkout, and all seven supported form plugins. There is no puzzle and no checkbox to see, so until now neither you nor your visitors had any sign the plugin was working. It draws no box and no background, and each form gets its own: a WooCommerce account page shows one under the login form and one under the registration form.
 * Optional: the same line can carry our logo and a link to captchaapi.eu. That is a credit on your public pages, so it is off unless you choose it under Settings -> captchaapi.eu.
 * Both can be turned off entirely.

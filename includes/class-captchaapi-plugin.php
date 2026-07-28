@@ -26,7 +26,10 @@ class Captchaapi_Plugin
     {
         $this->maybe_upgrade();
 
-        (new Captchaapi_Settings($this->options))->boot();
+        $stats = new Captchaapi_Stats();
+        $stats->boot();
+
+        (new Captchaapi_Settings($this->options, $stats, new Captchaapi_Usage($this->options)))->boot();
 
         if (! $this->options->is_configured()) {
             return;

@@ -135,6 +135,10 @@ class Captchaapi_Service
             // the site would run a delete for a row that is not there.
             if ($stored !== null) {
                 delete_option(self::STATE_OPTION);
+
+                if ($blocked) {
+                    $this->forget_usage();
+                }
             }
 
             return;
@@ -158,6 +162,29 @@ class Captchaapi_Service
             ['state' => $state, 'code' => $code, 'time' => time()],
             false
         );
+
+        // Crossing into a blocking state, not merely changing state. An outage
+        // says nothing about how much of the allowance is gone, and on a site
+        // whose outbound connection flaps the two alternate all day - dropping
+        // the cache on every flip would leave the settings screen waiting on a
+        // live call every time it is opened.
+        if ($state === self::NOT_ENFORCEABLE && ! $blocked) {
+            $this->forget_usage();
+        }
+    }
+
+    /**
+     * Drops the cached period figures when the account crosses into or out of
+     * being served at all.
+     *
+     * They are cached for half a day, which is right while nothing is moving
+     * and wrong at the moment something does: an account that has just crossed
+     * its cap would otherwise show yesterday's comfortable number beside a
+     * notice saying its forms are being turned away.
+     */
+    private function forget_usage(): void
+    {
+        delete_transient(Captchaapi_Usage::TRANSIENT);
     }
 
     /**

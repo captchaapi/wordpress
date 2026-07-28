@@ -17,9 +17,15 @@ class Captchaapi_Settings
 
     private Captchaapi_Options $options;
 
-    public function __construct(Captchaapi_Options $options)
+    private Captchaapi_Stats $stats;
+
+    private Captchaapi_Usage $usage;
+
+    public function __construct(Captchaapi_Options $options, Captchaapi_Stats $stats, Captchaapi_Usage $usage)
     {
         $this->options = $options;
+        $this->stats   = $stats;
+        $this->usage   = $usage;
     }
 
     public function boot(): void
@@ -230,6 +236,13 @@ class Captchaapi_Settings
             $output[$toggle] = ! empty($input[$toggle]);
         }
 
+        // A different secret is a different project, and possibly a different
+        // account. Whatever is cached describes the old one.
+        if (($output['secret_key'] ?? '') !== ($current['secret_key'] ?? '')
+            || ($output['base_url'] ?? '') !== ($current['base_url'] ?? '')) {
+            $this->usage->forget();
+        }
+
         $output['failsafe'] = ! empty($input['failsafe']);
 
         $badge = isset($input['badge']) ? sanitize_key($input['badge']) : '';
@@ -282,6 +295,7 @@ class Captchaapi_Settings
             <h1>captchaapi.eu</h1>
 
             <?php $this->render_status(); ?>
+            <?php $this->render_activity(); ?>
 
             <form method="post" action="options.php">
                 <?php settings_fields(self::GROUP); ?>
@@ -470,6 +484,153 @@ class Captchaapi_Settings
             </form>
         </div>
         <?php
+    }
+
+    /**
+     * What the plugin has actually been doing.
+     *
+     * Two sources, deliberately kept apart on screen. The local counters are
+     * what this site decided; the service's figures are how much of the account
+     * quota is gone. They are not two views of one number - a challenge that is
+     * issued and never submitted counts for the service and not for us - and
+     * adding them up would produce a total that means nothing.
+     *
+     * Order matters more than the numbers. When the service says it is not
+     * issuing challenges, that is today's truth and the totals are up to a
+     * quarter of an hour behind it: showing "4,800 of 5,000" first would read as
+     * headroom to a site whose forms are already being turned away.
+     */
+    private function render_activity(): void
+    {
+        if (! $this->options->is_configured()) {
+            return;
+        }
+
+        $problem = (new Captchaapi_Service($this->options))->last_problem();
+        $blocked = $problem !== null && $problem['state'] === Captchaapi_Service::NOT_ENFORCEABLE;
+        $usage   = $this->usage->current();
+        $recent  = $this->stats->totals(7);
+        $total   = $this->stats->totals(Captchaapi_Stats::KEEP_DAYS);
+
+        if (! $blocked && $usage === null && ! $this->stats->has_data()) {
+            return;
+        }
+
+        echo '<h2 class="title">' . esc_html__('Activity', 'captchaapi') . '</h2>';
+
+        if ($blocked) {
+            printf(
+                '<p><strong>%s</strong></p>',
+                esc_html(Captchaapi_Gate::reason_for($problem['code']))
+            );
+        }
+
+        // A blocked account still prints its reason above, but an account
+        // blocked before it ever saw a submission has nothing to tabulate, and
+        // an empty striped table under a heading reads as a broken screen.
+        if (! $this->stats->has_data() && $usage === null) {
+            return;
+        }
+
+        echo '<table class="widefat striped captchaapi-activity"><tbody>';
+
+        if ($this->stats->has_data()) {
+            // The longer figure is only worth printing once it says something
+            // the shorter one does not. On a site younger than a week, or a
+            // quiet one, the two are the same number twice.
+            $this->activity_row(
+                __('Verified on this site', 'captchaapi'),
+                number_format_i18n($recent['passed']),
+                $total['passed'] === $recent['passed'] ? '' : number_format_i18n($total['passed'])
+            );
+            $this->activity_row(
+                __('Turned away on this site', 'captchaapi'),
+                number_format_i18n($recent['blocked']),
+                $total['blocked'] === $recent['blocked'] ? '' : number_format_i18n($total['blocked'])
+            );
+        }
+
+        if ($usage !== null) {
+            $this->activity_row(
+                __('Account usage this period', 'captchaapi'),
+                $this->usage_figure($usage),
+                ''
+            );
+        }
+
+        echo '</tbody></table>';
+
+        $this->activity_footnote($usage);
+    }
+
+    /**
+     * @param array{used: int, limit: ?int} $usage
+     */
+    private function usage_figure(array $usage): string
+    {
+        // No cap on this account. Inventing one from the tier would be a guess,
+        // and a wrong one the moment a plan changes.
+        if ($usage['limit'] === null) {
+            return number_format_i18n($usage['used']);
+        }
+
+        return sprintf(
+            /* translators: 1: challenges used, 2: the account's monthly cap. */
+            __('%1$s of %2$s', 'captchaapi'),
+            number_format_i18n($usage['used']),
+            number_format_i18n($usage['limit'])
+        );
+    }
+
+    /**
+     * @param array{period_start: string}|null $usage
+     */
+    private function activity_footnote(?array $usage): void
+    {
+        $notes = [];
+
+        if ($this->stats->has_data()) {
+            $notes[] = esc_html__('Figures for this site cover the last seven days.', 'captchaapi');
+
+            /* translators: %s: how long ago, e.g. "3 minutes". */
+            $ago = esc_html__('Last checked a submission %s ago.', 'captchaapi');
+
+            $notes[] = sprintf($ago, esc_html(human_time_diff($this->stats->last_seen())));
+        }
+
+        if ($usage !== null) {
+            /* translators: %s: a duration, e.g. "20 minutes". */
+            $lag = esc_html__('Account figures come from captchaapi.eu and lag live traffic by up to %s.', 'captchaapi');
+
+            $notes[] = sprintf(
+                $lag,
+                esc_html(human_time_diff(0, max(60, (int) ($usage['stale_after'] ?? 0))))
+            );
+        }
+
+        if ($notes !== []) {
+            // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Every element of $notes is escaped where it is built.
+            echo '<p class="description">' . implode(' ', $notes) . '</p>';
+        }
+    }
+
+    private function activity_row(string $label, string $recent, string $total): void
+    {
+        $trailing = '';
+
+        if ($total !== '') {
+            /* translators: %s: a count covering the last 30 days. */
+            $longer = esc_html__('(%s in 30 days)', 'captchaapi');
+
+            $trailing = ' <span class="description">' . sprintf($longer, esc_html($total)) . '</span>';
+        }
+
+        printf(
+            '<tr><td>%1$s</td><td><strong>%2$s</strong>%3$s</td></tr>',
+            esc_html($label),
+            esc_html($recent),
+            $trailing
+        );
     }
 
     private function render_status(): void
