@@ -75,3 +75,42 @@ if command -v phpcs >/dev/null 2>&1 && [ -n "$staged_php" ]; then
   echo "$staged_php" | tr '\n' ' ' | xargs phpcs
   echo "✓ phpcs passed"
 fi
+
+# ── 4. The directory's own checks, when a WordPress install is at hand ───────
+# The same tool the release workflow gates on, run against a local install with
+# the plugin-check plugin active. It takes about a second and catches the class
+# of thing that is invisible until CI says no: an escaping sniff that cannot see
+# through a variable, a translators comment one line too far from its string.
+#
+# Point CAPTCHAAPI_WP_PATH at an install, or keep one beside this repo as
+# ../wp-test. Skip a run with SKIP_PLUGIN_CHECK=1.
+#
+# Like phpcs above, this reads the working tree rather than the index - it needs
+# real files on disk to load the plugin.
+wp_path="${CAPTCHAAPI_WP_PATH:-$(git rev-parse --show-toplevel)/../wp-test}"
+
+if [ -z "${SKIP_PLUGIN_CHECK:-}" ] && [ -d "$wp_path" ]; then
+  if command -v wp >/dev/null 2>&1; then
+    wp_cli=(wp)
+  elif [ -f "$wp_path/wp-cli.phar" ]; then
+    wp_cli=(php "$wp_path/wp-cli.phar")
+  else
+    wp_cli=()
+  fi
+
+  if [ ${#wp_cli[@]} -gt 0 ]; then
+    echo "▶ plugin check"
+    check_output=$(cd "$wp_path" && "${wp_cli[@]}" plugin check captchaapi --format=csv \
+      --exclude-directories=.github,.githooks,.wordpress-org,.claude,.idea,languages \
+      --exclude-files=.gitignore,.distignore,.DS_Store,README.md 2>/dev/null || true)
+
+    # Errors block a release, warnings do not - the same line the workflow draws.
+    if printf '%s' "$check_output" | grep -q ',ERROR,'; then
+      echo "✗ plugin check found errors:" >&2
+      printf '%s' "$check_output" | grep -B 4 ',ERROR,' >&2
+      exit 1
+    fi
+
+    echo "✓ plugin check passed"
+  fi
+fi
