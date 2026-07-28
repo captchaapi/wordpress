@@ -625,12 +625,8 @@ class Captchaapi_Settings
             $trailing = ' <span class="description">' . sprintf($longer, esc_html($total)) . '</span>';
         }
 
-        printf(
-            '<tr><td>%1$s</td><td><strong>%2$s</strong>%3$s</td></tr>',
-            esc_html($label),
-            esc_html($recent),
-            $trailing
-        );
+        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $label, $recent and $trailing are all escaped above.
+        echo '<tr><td>' . esc_html($label) . '</td><td><strong>' . esc_html($recent) . '</strong>' . $trailing . '</td></tr>';
     }
 
     private function render_status(): void
