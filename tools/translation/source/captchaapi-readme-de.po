@@ -1,0 +1,460 @@
+# Translation of Plugins - GDPR Cookieless CAPTCHA for WooCommerce &amp; Forms &#8211; captchaapi.eu - Stable Readme (latest release) in German
+# This file is distributed under the same license as the Plugins - GDPR Cookieless CAPTCHA for WooCommerce &amp; Forms &#8211; captchaapi.eu - Stable Readme (latest release) package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: +0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: GlotPress/4.0.3\n"
+"Language: de\n"
+"Project-Id-Version: Plugins - GDPR Cookieless CAPTCHA for WooCommerce &amp; Forms &#8211; captchaapi.eu - Stable Readme (latest release)\n"
+
+#. Short description.
+#, gp-priority: high
+msgid "Cookieless, EU-hosted reCAPTCHA alternative for WooCommerce, WPForms, Fluent Forms &amp; CF7. GDPR-clean, no cookie banner."
+msgstr ""
+
+#. Plugin name.
+#, gp-priority: high
+msgid "GDPR Cookieless CAPTCHA for WooCommerce &amp; Forms - captchaapi.eu"
+msgstr ""
+
+#. Found in faq paragraph.
+msgid "You can add our logo and a link to captchaapi.eu to that line, or turn the whole thing off, under Settings -&gt; captchaapi.eu. The version with our logo is a credit on your public pages, so it is never on unless you pick it."
+msgstr ""
+
+#. Found in faq paragraph.
+msgid "One line of small text under each protected form, saying whether the protection is running. No box, no background, no checkbox to click. Because there is no puzzle to solve, without it there would be no sign at all that the form is protected - not for your visitors and not for you."
+msgstr ""
+
+#. Found in faq header.
+msgid "What do visitors see on a protected form?"
+msgstr ""
+
+#. Found in description paragraph.
+msgid "When you open the plugin's settings screen, it asks the captchaapi.eu /api/v1/stats endpoint how much of your account's monthly allowance has been used, so the Activity panel can show it. The request is authenticated with your secret key and carries nothing about your visitors. It runs only for administrators, only on that screen, and the answer is cached for twelve hours."
+msgstr ""
+
+#. Found in description paragraph.
+msgid "Your server also asks the captchaapi.eu /captcha/challenge endpoint whether it would still issue challenges for your site key. This happens in two situations: when you press \"Test connection\" on the settings screen, and when a protected form arrives with no token at all - which can mean either a stripped submission or a widget that never received a challenge, and the plugin has to know which before it rejects a real visitor. The request sends your public site key and your site's address; the answer is cached for a few minutes, so a burst of submissions does not become a burst of requests. No visitor data is sent."
+msgstr ""
+
+#. Found in faq paragraph.
+msgid "Protected forms are rejected until you top up, and a notice in your dashboard tells you so. Protection never drops silently to \"no captcha\" - you would think you were protected while you were not. Logging in and resetting a password keep working, so you can always reach your settings and your captchaapi.eu account."
+msgstr ""
+
+#. Found in faq paragraph.
+msgid "Logging in and resetting a password are the exception. Those two forms are never blocked by anything on our side, so an outage or an account problem can never shut you out of your own site."
+msgstr ""
+
+#. Found in faq header.
+msgid "What happens when my free tier runs out?"
+msgstr ""
+
+#. Found in faq paragraph.
+msgid "By default the plugin fails closed: a missing or unverified token is rejected rather than waved through. If you would rather keep forms working during an outage, turn on the optional failsafe mode: when the verify request cannot reach captchaapi.eu, it lets submissions through and automatically resumes strict protection once the service is back."
+msgstr ""
+
+#. Found in faq paragraph.
+msgid "Verification is a single server-to-server request on submit, with a short timeout. The browser does its proof-of-work in the background before the submit, usually in well under a second."
+msgstr ""
+
+#. Found in description paragraph.
+msgid "When a protected form is submitted, your server sends the token to the captchaapi.eu /verify endpoint, authenticated with your secret key, and trusts the service's accept-or-reject answer. The secret key stays on your server and is never sent to the browser."
+msgstr ""
+
+#. Found in description paragraph.
+msgid "Each token verifies exactly once - the service enforces single use - so the plugin keeps no local replay table and nothing to clean up on a schedule."
+msgstr ""
+
+#. Found in description paragraph.
+msgid "Each form can be turned on or off from the settings screen. The WooCommerce and form-plugin options appear only when that plugin is active."
+msgstr ""
+
+#. Found in description paragraph.
+msgid "Form plugins:"
+msgstr ""
+
+#. Found in description paragraph.
+msgid "WooCommerce:"
+msgstr ""
+
+#. Found in description paragraph.
+msgid "WordPress core:"
+msgstr ""
+
+#. Found in description paragraph.
+msgid "When a form is submitted, your server confirms that token with captchaapi.eu over a single request, secured by your secret key. It is the same model every hosted CAPTCHA uses, and it keeps the secret on your server, never in the browser."
+msgstr ""
+
+#. Found in description list item.
+msgid "The plugin confirms the token with captchaapi.eu using your secret key and rejects the submission if the service does not accept it."
+msgstr ""
+
+#. Found in description list item.
+msgid "On submit, it attaches the resulting token to the form."
+msgstr ""
+
+#. Found in description list item.
+msgid "Elementor Forms"
+msgstr ""
+
+#. Found in description list item.
+msgid "Gravity Forms"
+msgstr ""
+
+#. Found in description list item.
+msgid "Checkout"
+msgstr ""
+
+#. Found in description list item.
+msgid "Login"
+msgstr ""
+
+#. Found in description list item.
+msgid "A free tier, with commercial use allowed."
+msgstr ""
+
+#. Found in description list item.
+msgid "No images and no puzzles to solve. The check runs in the background, so it works the same for every visitor, including people who find image challenges difficult or browse with a screen reader."
+msgstr ""
+
+#. Found in description list item.
+msgid "Hosted only in the EU, in Nuremberg, Germany. No data leaves the EU."
+msgstr ""
+
+#. Found in description list item.
+msgid "No tracking and no visitor profile. The IP address is used only for rate limiting and abuse detection, then dropped; it is never written to a database."
+msgstr ""
+
+#. Found in description list item.
+msgid "No cookies, and nothing to add to a cookie banner."
+msgstr ""
+
+#. Found in description header.
+msgid "Forms and plugins it protects"
+msgstr ""
+
+#. Found in description header.
+msgid "Privacy by design"
+msgstr ""
+
+#. Found in description paragraph.
+msgid "A privacy-first alternative to reCAPTCHA: captchaapi.eu stops form spam without making your visitors click traffic lights. A free tier with commercial use allowed gets you started. The work happens in the background: the visitor's browser solves a small proof-of-work puzzle while they fill in the form, and a token rides along with the submission. There is nothing to solve and nothing to see."
+msgstr ""
+
+#. Found in description paragraph.
+msgid "Protects WooCommerce (login, registration, lost password, checkout), Contact Form 7, WPForms, Fluent Forms, Formidable Forms, Forminator, Gravity Forms and Elementor Forms - cookieless, EU-hosted, no cookie banner required."
+msgstr ""
+
+#. Found in faq paragraph.
+msgid "WooCommerce, WPForms, Fluent Forms, Formidable Forms, Forminator, Gravity Forms, and Elementor Forms, in addition to Contact Form 7. Enable each from the settings screen; the option appears only when that plugin is active. The plugin attaches a token before the form is sent and verifies it on the server."
+msgstr ""
+
+#. Found in faq header.
+msgid "Which form plugins are supported?"
+msgstr ""
+
+#. Found in description list item.
+msgid "Forminator"
+msgstr ""
+
+#. Found in description list item.
+msgid "Formidable Forms"
+msgstr ""
+
+#. Found in description list item.
+msgid "Fluent Forms"
+msgstr ""
+
+#. Found in description list item.
+msgid "WPForms"
+msgstr ""
+
+#. Found in faq paragraph.
+msgid "This version targets single-site installs. Network signup through wp-signup.php is not covered yet."
+msgstr ""
+
+#. Found in faq paragraph.
+msgid "No. The check is a browser-side proof of work, so it only runs on real form submissions in a browser. XML-RPC and the REST API are not browsers, so they are left untouched and a captcha cannot gate them. If you do not use XML-RPC, disabling it separately closes that brute-force surface."
+msgstr ""
+
+#. Found in faq paragraph.
+msgid "The standard WordPress login form at wp-login.php and the WooCommerce account login form. Other custom login forms are not covered in this version."
+msgstr ""
+
+#. Found in faq paragraph.
+msgid "On servers in the EU."
+msgstr ""
+
+#. Found in faq paragraph.
+msgid "No cookies, no profiling, and no third-party requests beyond the widget talking to the API. The visitor's IP address is used only transiently for rate limiting and abuse/bot detection; it is not stored in a database and is not used to build a visitor profile."
+msgstr ""
+
+#. Found in faq paragraph.
+msgid "Yes. Enable Contact Form 7 in the settings. The plugin acquires a token before Contact Form 7 sends the form and verifies it on the server."
+msgstr ""
+
+#. Found in faq paragraph.
+msgid "No. There is no image challenge and no checkbox. The proof-of-work runs in the browser while the form is being filled in."
+msgstr ""
+
+#. Found in faq header.
+msgid "Does it work on multisite?"
+msgstr ""
+
+#. Found in faq header.
+msgid "Does it protect XML-RPC?"
+msgstr ""
+
+#. Found in faq header.
+msgid "Which login forms are covered?"
+msgstr ""
+
+#. Found in faq header.
+msgid "Where is the data processed?"
+msgstr ""
+
+#. Found in faq header.
+msgid "Do you set cookies or track visitors?"
+msgstr ""
+
+#. Found in faq header.
+msgid "Does it work with Contact Form 7?"
+msgstr ""
+
+#. Found in faq header.
+msgid "What happens if captchaapi.eu is unreachable?"
+msgstr ""
+
+#. Found in faq header.
+msgid "Does form submission slow down?"
+msgstr ""
+
+#. Found in faq header.
+msgid "Do my visitors have to solve anything?"
+msgstr ""
+
+#. Found in installation paragraph.
+msgid "During a key rotation, list the current and the new key together, separated by a comma:"
+msgstr ""
+
+#. Found in installation paragraph.
+msgid "For a stricter setup, keep the secret key out of the database by defining it in <code>wp-config.php</code>:"
+msgstr ""
+
+#. Found in installation list item.
+msgid "Choose which forms to protect and save."
+msgstr ""
+
+#. Found in installation list item.
+msgid "Enter your site key and secret key from your project dashboard."
+msgstr ""
+
+#. Found in installation list item.
+msgid "Open Settings -&gt; captchaapi.eu."
+msgstr ""
+
+#. Found in installation list item.
+msgid "Activate it."
+msgstr ""
+
+#. Found in installation list item.
+msgid "Upload the plugin to <code>wp-content/plugins/captchaapi</code>, or install it from the Plugins screen."
+msgstr ""
+
+#. Found in description paragraph.
+msgid "To issue and validate a token the service receives your public site key, the proof-of-work result, and - as with any HTTP request - the visitor's IP address. The IP address is used for rate limiting and abuse/bot detection (including a coarse, IP-derived country) and is processed transiently: a hashed form and aggregate counters are held briefly in a cache. No raw IP address and no per-visitor record are written to a database. The service sets no cookies. Data is processed on servers in the EU (Nuremberg, Germany)."
+msgstr ""
+
+#. Found in description paragraph.
+msgid "On any public page that contains a protected form, the plugin loads the service's widget script (captcha.js) from your configured captchaapi.eu endpoint. The visitor's browser then communicates with the captchaapi.eu API to perform a proof-of-work challenge and obtain a token that is attached to the form on submit. This happens for every visitor who loads a protected form."
+msgstr ""
+
+#. Found in description paragraph.
+msgid "This plugin connects to captchaapi.eu, a third-party CAPTCHA service, to protect your forms from spam. It is required for the plugin to function."
+msgstr ""
+
+#. Found in description paragraph.
+msgid "This plugin connects to the captchaapi.eu service. Create a project at https://captchaapi.eu to get a site key and a secret key. A free tier is available."
+msgstr ""
+
+#. Found in description list item.
+msgid "Privacy Policy: https://captchaapi.eu/legal/privacy"
+msgstr ""
+
+#. Found in description list item.
+msgid "Terms of Service: https://captchaapi.eu/legal/terms"
+msgstr ""
+
+#. Found in description list item.
+msgid "Service provider: captchaapi.eu"
+msgstr ""
+
+#. Found in description list item.
+msgid "The widget loads on the pages with a protected form and solves a proof-of-work puzzle in a Web Worker."
+msgstr ""
+
+#. Found in description list item.
+msgid "Contact Form 7"
+msgstr ""
+
+#. Found in description list item.
+msgid "Comments"
+msgstr ""
+
+#. Found in description list item.
+msgid "Lost password"
+msgstr ""
+
+#. Found in description list item.
+msgid "Registration"
+msgstr ""
+
+#. Found in description list item.
+msgid "Login (wp-login.php)"
+msgstr ""
+
+#. Found in description header.
+msgid "External services"
+msgstr ""
+
+#. Found in description header.
+msgid "You need an account"
+msgstr ""
+
+#. Found in description header.
+msgid "How it works"
+msgstr ""
+
+#. Found in changelog list item.
+#, gp-priority: low
+msgid "The captchaapi.eu widget script is no longer stamped with the plugin's version number. It is the service's file on the service's release schedule, and tying it to ours meant a browser kept the build that shipped with your plugin version until the next plugin update."
+msgstr ""
+
+#. Found in changelog list item.
+#, gp-priority: low
+msgid "Both can be turned off entirely."
+msgstr ""
+
+#. Found in changelog list item.
+#, gp-priority: low
+msgid "Optional: the same line can carry our logo and a link to captchaapi.eu. That is a credit on your public pages, so it is off unless you choose it under Settings -&gt; captchaapi.eu."
+msgstr ""
+
+#. Found in changelog list item.
+#, gp-priority: low
+msgid "Every protected form now carries a single line reporting whether the protection is running - WordPress core, WooCommerce including the checkout, and all seven supported form plugins. There is no puzzle and no checkbox to see, so until now neither you nor your visitors had any sign the plugin was working. It draws no box and no background, and each form gets its own: a WooCommerce account page shows one under the login form and one under the registration form."
+msgstr ""
+
+#. Found in changelog list item.
+#, gp-priority: low
+msgid "When the service says it cannot issue challenges, the panel leads with that rather than with the figures. Account totals lag live traffic by up to fifteen minutes, and \"4,800 of 5,000\" reads as headroom to a site whose forms are already being turned away."
+msgstr ""
+
+#. Found in changelog list item.
+#, gp-priority: low
+msgid "New: an Activity panel on the settings screen. It answers the question an invisible captcha cannot answer on its own - is this thing working? Two figures come from your own site (submissions verified, submissions turned away) and one from captchaapi.eu (how much of your account's monthly allowance is gone). They are kept apart on purpose: a challenge that is issued and never submitted counts for the service and not for your site, so adding them together would produce a number that means nothing."
+msgstr ""
+
+#. Found in changelog list item.
+#, gp-priority: low
+msgid "Verification and connection checks time out after 3 seconds instead of 5, so a slow service does not hold up a submission."
+msgstr ""
+
+#. Found in changelog list item.
+#, gp-priority: low
+msgid "Failsafe mode is now clearly scoped to outages on our side. When the account cannot issue challenges at all - free tier used up, account suspended, project inactive - protected forms are rejected regardless of the setting, so protection never drops silently."
+msgstr ""
+
+#. Found in changelog list item.
+#, gp-priority: low
+msgid "Rejections now say why. Administrators see the reason next to the error, and a notice in the dashboard explains what to do when protected forms are being turned away."
+msgstr ""
+
+#. Found in changelog list item.
+#, gp-priority: low
+msgid "Fixed: logging in and resetting a password are never blocked by the state of your captchaapi.eu account. Previously a used-up free tier, a suspended account, or an unreachable service could reject the wp-login.php form and shut you out of your own site."
+msgstr ""
+
+#. Found in changelog list item.
+#, gp-priority: low
+msgid "Stopped marking product names and the captchaapi.eu brand as translatable strings, so the translation list only contains real interface text."
+msgstr ""
+
+#. Found in changelog list item.
+#, gp-priority: low
+msgid "Failsafe mode now keys off the verify request: when captchaapi.eu cannot be reached on submit, failsafe lets the form through; a definite rejection always blocks."
+msgstr ""
+
+#. Found in changelog list item.
+#, gp-priority: low
+msgid "The service enforces single use, so the local replay table and its hourly purge cron are gone - both are removed automatically when you upgrade."
+msgstr ""
+
+#. Found in changelog list item.
+#, gp-priority: low
+msgid "Verification is now a server-to-server call. The plugin confirms each token with the captchaapi.eu /verify endpoint using your secret key, instead of checking a signed token locally. The form field is now <code>captchaapi_response</code>."
+msgstr ""
+
+#. Found in changelog list item.
+#, gp-priority: low
+msgid "Clearer directory listing: grouped the protected forms by WordPress core, WooCommerce, and form plugins, added Gravity Forms and Elementor Forms to the list, refreshed the tags, and added a \"Privacy by design\" summary. No code changes."
+msgstr ""
+
+#. Found in changelog list item.
+#, gp-priority: low
+msgid "Refreshed the plugin icon and directory banner with the new captchaapi.eu branding."
+msgstr ""
+
+#. Found in changelog list item.
+#, gp-priority: low
+msgid "Documented failsafe mode in the FAQ: forms can stay usable during a captchaapi.eu outage, then strict protection resumes automatically."
+msgstr ""
+
+#. Found in changelog list item.
+#, gp-priority: low
+msgid "Clearer directory listing: updated title, tags, and description to highlight the cookieless, EU-hosted protection and the supported form plugins."
+msgstr ""
+
+#. Found in changelog list item.
+#, gp-priority: low
+msgid "Added translations: Czech, German, French, Spanish, Italian, Polish, Dutch, Portuguese, and Romanian."
+msgstr ""
+
+#. Found in changelog list item.
+#, gp-priority: low
+msgid "Settings screen: grouped into sections (account keys, protected forms, behavior, advanced), a \"Get your free keys\" call to action when no keys are set, key format hints in the fields, and a clearer warning that the secret key must stay on the server."
+msgstr ""
+
+#. Found in changelog list item.
+#, gp-priority: low
+msgid "Added failsafe mode: an optional fallback that keeps forms usable while captchaapi.eu is unreachable, then resumes strict protection automatically."
+msgstr ""
+
+#. Found in changelog list item.
+#, gp-priority: low
+msgid "Added a \"Test API response\" button that checks the service is reachable and the keys are in the right fields."
+msgstr ""
+
+#. Found in changelog list item.
+#, gp-priority: low
+msgid "Added integrations for WooCommerce (login, registration, lost password, and checkout), WPForms, Fluent Forms, Formidable Forms, and Forminator."
+msgstr ""
+
+#. Found in changelog list item.
+#, gp-priority: low
+msgid "First release. Protects login, registration, lost password, comments, and Contact Form 7."
+msgstr ""
+
+#. Found in changelog list item.
+#, gp-priority: low
+msgid "Documented the captchaapi.eu external service in the readme, including the data sent and links to the Terms of Service and Privacy Policy."
+msgstr ""
+
+#. Found in changelog list item.
+#, gp-priority: low
+msgid "Compatibility and Plugin Check fixes for the WordPress.org directory: updated \"Tested up to\", aligned the plugin name with the readme, versioned the enqueued widget script, prefixed an uninstall global, and dropped the redundant load_plugin_textdomain() call."
+msgstr ""

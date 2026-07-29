@@ -1,0 +1,3 @@
+# Generated worksheets and merge output - regenerate with build_translator_doc.py
+out/
+__pycache__/
