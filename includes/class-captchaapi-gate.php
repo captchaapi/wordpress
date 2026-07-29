@@ -98,7 +98,11 @@ class Captchaapi_Gate
             return $generic;
         }
 
-        return $generic . ' ' . $this->failure_reason;
+        // The reason carries an error code and a domain, both arriving from
+        // outside, and twelve of the thirteen callers hand this straight to a
+        // form plugin that prints it without escaping. Escaped here, once, at
+        // the only place the reason is ever read.
+        return $generic . ' ' . esc_html($this->failure_reason);
     }
 
     /**
@@ -147,7 +151,7 @@ class Captchaapi_Gate
         if ($status === Captchaapi_Verifier::NOT_ENFORCEABLE) {
             $code = $this->verifier->last_error_code();
             $this->service->remember(Captchaapi_Service::NOT_ENFORCEABLE, $code);
-            $this->failure_reason = self::reason_for($code);
+            $this->failure_reason = self::reason_for($code, Captchaapi_Options::site_origin());
 
             return $this->always_open($surface);
         }
@@ -175,7 +179,7 @@ class Captchaapi_Gate
         }
 
         if ($state === Captchaapi_Service::NOT_ENFORCEABLE) {
-            $this->failure_reason = self::reason_for($this->service->blocking_code());
+            $this->failure_reason = self::reason_for($this->service->blocking_code(), Captchaapi_Options::site_origin());
 
             return $this->always_open($surface);
         }
@@ -197,9 +201,26 @@ class Captchaapi_Gate
 
     /**
      * Turns an error code into something an administrator can act on.
+     *
+     * Returns plain text, always - escaping belongs to whoever prints it, and
+     * the callers here sit in three different contexts. An earlier version
+     * escaped the unknown code on its way out, which meant the two callers that
+     * escape correctly escaped it twice.
+     *
+     * @param string $origin The site's own origin, for the one code where
+     *                       naming it turns a diagnosis into an instruction.
+     *                       Optional so existing callers keep working.
      */
-    public static function reason_for(string $code): string
+    public static function reason_for(string $code, string $origin = ''): string
     {
+        if ($code === 'domain_not_allowed' && $origin !== '') {
+            return sprintf(
+                /* translators: %s: this site's own origin, e.g. https://example.com */
+                __('This domain is not in the project\'s allowed domains. Add %s to the project at captchaapi.eu.', 'captchaapi'),
+                $origin
+            );
+        }
+
         switch ($code) {
             case 'free_tier_limit_reached':
                 return __('The free tier limit for this billing period has been reached.', 'captchaapi');
@@ -218,14 +239,10 @@ class Captchaapi_Gate
             case '':
                 return __('The captchaapi.eu service could not be reached.', 'captchaapi');
             default:
-                // An unrecognised code is repeated back to the reader, and the
-                // integrations hand this message to form plugins that print it
-                // without escaping. It arrives over the network, so it is not
-                // ours to trust however well we think we know the sender.
                 return sprintf(
                     /* translators: %s: error code returned by the captchaapi.eu service. */
                     __('The captchaapi.eu service rejected the request (%s).', 'captchaapi'),
-                    esc_html($code)
+                    $code
                 );
         }
     }

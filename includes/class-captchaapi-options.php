@@ -174,6 +174,29 @@ class Captchaapi_Options
         return $this->site_url();
     }
 
+    /**
+     * The origin this site sends to captchaapi.eu, and the one the project's
+     * allowed-domain list is matched against. Scheme, host and a non-standard
+     * port - the shape a browser puts in an `Origin` header.
+     *
+     * Static, and the only static method here, because it reads nothing from
+     * the instance: home_url() is the whole input. Deliberate rather than
+     * accidental - Captchaapi_Gate has no Options of its own and needs this to
+     * name the domain in a `domain_not_allowed` message.
+     */
+    public static function site_origin(): string
+    {
+        $parts = wp_parse_url(home_url());
+
+        if (! is_array($parts) || empty($parts['host'])) {
+            return home_url();
+        }
+
+        $origin = (isset($parts['scheme']) ? $parts['scheme'] : 'https') . '://' . $parts['host'];
+
+        return isset($parts['port']) ? $origin . ':' . $parts['port'] : $origin;
+    }
+
     public function is_configured(): bool
     {
         return $this->site_key() !== '' && $this->secret_keys() !== [];

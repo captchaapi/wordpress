@@ -224,7 +224,7 @@ class Captchaapi_Service
             'timeout' => 3,
             'headers' => [
                 'Content-Type' => 'application/json',
-                'Origin'       => $this->site_origin(),
+                'Origin'       => Captchaapi_Options::site_origin(),
             ],
             'body'    => wp_json_encode(['site_key' => $site_key]),
         ]);
@@ -266,18 +266,5 @@ class Captchaapi_Service
         return in_array($error_code, self::BLOCKING_CODES, true)
             ? [self::NOT_ENFORCEABLE, $error_code]
             : [self::UNAVAILABLE, $error_code];
-    }
-
-    private function site_origin(): string
-    {
-        $parts = wp_parse_url(home_url());
-
-        if (! is_array($parts) || empty($parts['host'])) {
-            return home_url();
-        }
-
-        $origin = (isset($parts['scheme']) ? $parts['scheme'] : 'https') . '://' . $parts['host'];
-
-        return isset($parts['port']) ? $origin . ':' . $parts['port'] : $origin;
     }
 }

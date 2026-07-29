@@ -170,7 +170,7 @@ If you use the "Connect to captchaapi.eu" button on the settings screen, the plu
 
 = 2.2.1 =
 * The directory listing now shows the Connect button 2.2.0 added, as the first screenshot. The setup screen is what a reader decides on, and until now the pictures all showed a plugin that was already configured.
-* No changes to the plugin itself. A screenshot needs a caption to be displayed, and captions travel in readme.txt - hence the version.
+* "This domain is not in the project's allowed domains" now says which domain to add. The allow-list is an exact match, so a project holding example.com does nothing for a site running on www.example.com - and the old message left you to work that out. Test connection, the admin notice and the message under a rejected form all name it now.
 
 = 2.2.0 =
 * Setting the plugin up no longer means copying keys between two browser tabs. With both key fields empty you get a **Connect to captchaapi.eu** button: one screen asks for an email and a password, and your account, a project locked to this site, and both keys are in place when you land back here. The keys never pass through your browser - your server fetches them directly over a server-to-server call.

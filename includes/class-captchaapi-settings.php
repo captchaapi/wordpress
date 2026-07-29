@@ -105,7 +105,7 @@ class Captchaapi_Settings
             'timeout' => 8,
             'headers' => [
                 'Content-Type' => 'application/json',
-                'Origin'       => $this->site_origin(),
+                'Origin'       => Captchaapi_Options::site_origin(),
             ],
             'body'    => wp_json_encode(['site_key' => $site_key]),
         ]);
@@ -140,26 +140,20 @@ class Captchaapi_Settings
         wp_send_json_error(['message' => $this->test_error_message($error_code)]);
     }
 
-    private function site_origin(): string
-    {
-        $parts = wp_parse_url(home_url());
-
-        if (! is_array($parts) || empty($parts['host'])) {
-            return home_url();
-        }
-
-        $origin = (isset($parts['scheme']) ? $parts['scheme'] : 'https') . '://' . $parts['host'];
-
-        return isset($parts['port']) ? $origin . ':' . $parts['port'] : $origin;
-    }
-
     private function test_error_message(string $error_code): string
     {
         switch ($error_code) {
             case 'invalid_site_key':
                 return __('Site key not recognized. Check that you copied the site key correctly.', 'captchaapi');
             case 'domain_not_allowed':
-                return __('The site key is valid, but this site\'s domain is not in the project\'s allowed domains.', 'captchaapi');
+                // Raw on purpose: the admin script writes this into
+                // textContent, which escapes it. Escaping here as well would
+                // show the entities.
+                return sprintf(
+                    /* translators: %s: this site's own origin, e.g. https://example.com */
+                    __('The site key is valid, but this site\'s domain is not in the project\'s allowed domains. Add %s to the project at captchaapi.eu.', 'captchaapi'),
+                    Captchaapi_Options::site_origin()
+                );
             case 'free_tier_limit_reached':
                 return __('The free tier limit for this billing period has been reached.', 'captchaapi');
             case 'account_suspended':
@@ -524,7 +518,7 @@ class Captchaapi_Settings
         if ($blocked) {
             printf(
                 '<p><strong>%s</strong></p>',
-                esc_html(Captchaapi_Gate::reason_for($problem['code']))
+                esc_html(Captchaapi_Gate::reason_for($problem['code'], Captchaapi_Options::site_origin()))
             );
         }
 
