@@ -104,7 +104,11 @@ class Captchaapi_Core_Forms
 
         if (! $this->gate->passes('comments')) {
             wp_die(
-                esc_html($this->gate->error_message()),
+                // Not escaped here: error_message() escapes the part that comes
+                // from outside, because the form plugins it is handed to print
+                // it as-is. Escaping a second time would put &#039; on screen
+                // where the message has an apostrophe.
+                $this->gate->error_message(), // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
                 esc_html__('Comment blocked', 'captchaapi'),
                 ['response' => 403, 'back_link' => true]
             );

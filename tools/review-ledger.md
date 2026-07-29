@@ -6,6 +6,11 @@ Verzovaný schválně. Kdyby ležel mezi lokální konfigurací nástrojů, nepu
 
 Prořezávání: záznam o souboru, třídě nebo metodě, které už neexistují, se maže - důvod zanikl spolu s kódem. Obecné záznamy zůstávají.
 
+## class-captchaapi-core-forms.php:107 - dvojité escapování error_message()
+- Datum: 2026-07-29
+- Verdikt: PŘIJATO
+- Důvod: Klasifikace MALÉ (kosmetika, jen pro admina), ale je to regrese z téhož diffu - přesun `esc_html()` do `error_message()` nechal vnější escape na místě a apostrof v hlášce se vypsal jako `&#039;`. Oprava je jeden řádek a nálezy vlastního diffu se neodkládají.
+
 ## Obecně - modely hrozby předpokládající prolomené TLS nebo zlomyslné captchaapi.eu
 - Datum: 2026-07-29
 - Verdikt: ZAMÍTNUTO
