@@ -14,7 +14,7 @@ Protects the login, registration, lost-password, and comment forms, plus Contact
 
 1. Copy this folder to `wp-content/plugins/captchaapi`, or build a zip and install it from the Plugins screen.
 2. Activate **captchaapi.eu**.
-3. Go to **Settings → captchaapi.eu**, enter your site key and secret key, pick the forms to protect, and save.
+3. Go to **Settings → captchaapi.eu**. With both key fields empty you get a **Connect to captchaapi.eu** button that signs you up and fills them in; otherwise paste the site key and secret key yourself. Pick the forms to protect and save.
 
 ## Configuration
 

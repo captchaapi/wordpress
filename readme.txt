@@ -4,7 +4,7 @@ Tags: captcha, recaptcha, spam, contact form, gdpr
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 2.1.1
+Stable tag: 2.2.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -64,14 +64,14 @@ Each token verifies exactly once - the service enforces single use - so the plug
 
 = You need an account =
 
-This plugin connects to the captchaapi.eu service. Create a project at https://captchaapi.eu to get a site key and a secret key. A free tier is available.
+This plugin connects to the captchaapi.eu service. If you have no account yet, the Connect button on the settings screen creates one and fills both keys in for you. If you already have one, create a project at https://captchaapi.eu and copy the two keys across by hand. A free tier is available.
 
 == Installation ==
 
 1. Upload the plugin to `wp-content/plugins/captchaapi`, or install it from the Plugins screen.
 2. Activate it.
 3. Open Settings -> captchaapi.eu.
-4. Enter your site key and secret key from your project dashboard.
+4. Click **Connect to captchaapi.eu** - it creates your free account and a project for this site, then fills both keys in. Already have an account? Paste the site key and secret key from your project dashboard instead.
 5. Choose which forms to protect and save.
 
 For a stricter setup, keep the secret key out of the database by defining it in `wp-config.php`:
@@ -150,6 +150,8 @@ Your server also asks the captchaapi.eu /captcha/challenge endpoint whether it w
 
 When you open the plugin's settings screen, it asks the captchaapi.eu /api/v1/stats endpoint how much of your account's monthly allowance has been used, so the Activity panel can show it. The request is authenticated with your secret key and carries nothing about your visitors. It runs only for administrators, only on that screen, and the answer is cached for twelve hours.
 
+If you use the "Connect to captchaapi.eu" button on the settings screen, the plugin sends you to captchaapi.eu to create your free account. That link carries your site's hostname and the address of this admin screen, so the service knows which site to protect and where to deliver the keys. Nothing is sent until you press the button, and no keys travel through your browser: once you finish signing up, your server fetches them from the captchaapi.eu /api/v1/connect/exchange endpoint over a direct server-to-server call. The button only appears while both key fields are empty - if you already have an account, sign in on captchaapi.eu and paste your keys in by hand.
+
 * Service provider: captchaapi.eu
 * Terms of Service: https://captchaapi.eu/legal/terms
 * Privacy Policy: https://captchaapi.eu/legal/privacy
@@ -164,6 +166,10 @@ When you open the plugin's settings screen, it asks the captchaapi.eu /api/v1/st
 6. When the account cannot issue challenges, the plugin says so on every admin screen instead of failing quietly.
 
 == Changelog ==
+
+= 2.2.0 =
+* Setting the plugin up no longer means copying keys between two browser tabs. With both key fields empty you get a **Connect to captchaapi.eu** button: one screen asks for an email and a password, and your account, a project locked to this site, and both keys are in place when you land back here. The keys never pass through your browser - your server fetches them directly over a server-to-server call.
+* This is first-time setup only. If one key is already filled in, the button is replaced by a sign-in link: an existing account copies its keys from the dashboard, as before.
 
 = 2.1.1 =
 * The plugin directory listing now has screenshots. An invisible captcha is hard to show a picture of, so they show the things you can see: the Activity panel, which forms are covered, the line under a protected login form, and the notice that appears when the account stops issuing challenges.

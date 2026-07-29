@@ -294,6 +294,7 @@ class Captchaapi_Settings
         <div class="wrap captchaapi-settings">
             <h1>captchaapi.eu</h1>
 
+            <?php (new Captchaapi_Connect($this->options))->render_result(); ?>
             <?php $this->render_status(); ?>
             <?php $this->render_activity(); ?>
 
@@ -301,6 +302,8 @@ class Captchaapi_Settings
                 <?php settings_fields(self::GROUP); ?>
 
                 <h2 class="title"><?php esc_html_e('Account keys', 'captchaapi'); ?></h2>
+
+                <?php (new Captchaapi_Connect($this->options))->render_button(); ?>
                 <table class="form-table" role="presentation">
                     <tr>
                         <th scope="row"><label for="captchaapi-site-key"><?php esc_html_e('Site key', 'captchaapi'); ?></label></th>

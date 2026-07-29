@@ -7,6 +7,7 @@ if (! defined('WP_UNINSTALL_PLUGIN')) {
 delete_option('captchaapi_options');
 delete_option('captchaapi_version');
 delete_option('captchaapi_last_service_state');
+delete_option('captchaapi_connect_pending');
 delete_transient('captchaapi_service_state');
 delete_option('captchaapi_stats');
 delete_transient('captchaapi_usage');

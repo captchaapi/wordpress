@@ -31,6 +31,10 @@ class Captchaapi_Plugin
 
         (new Captchaapi_Settings($this->options, $stats, new Captchaapi_Usage($this->options)))->boot();
 
+        // Before the is_configured() gate on purpose: connecting is what a
+        // site with no keys yet is here to do.
+        (new Captchaapi_Connect($this->options))->boot();
+
         if (! $this->options->is_configured()) {
             return;
         }
@@ -87,6 +91,10 @@ class Captchaapi_Plugin
     public static function deactivate(): void
     {
         self::remove_legacy_replay_store();
+
+        // An interrupted connect leaves a PKCE verifier behind; options have
+        // no expiry of their own, so drop it rather than let it sit.
+        delete_option(Captchaapi_Connect::PENDING_OPTION);
     }
 
     public static function remove_legacy_replay_store(): void

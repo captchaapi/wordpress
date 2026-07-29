@@ -150,6 +150,30 @@ class Captchaapi_Options
         return self::DEFAULT_BASE_URL;
     }
 
+    /**
+     * Where the connect handshake runs. Both ends of it - the browser hop that
+     * issues the one-time code and the server-to-server call that redeems it -
+     * read this one method, because a code issued by one host and redeemed at
+     * another is either a leak or a dead end.
+     *
+     * A wp-config constant and nothing else. Deliberately not an option and
+     * deliberately not base_url(): both are editable from the settings screen,
+     * so anyone holding an administrator session could point the exchange at a
+     * host of their choosing and collect the code. Editing wp-config.php means
+     * filesystem access, and a site in that state has already lost.
+     *
+     * It exists so the flow can be exercised against a local service instead of
+     * only ever being proven in production.
+     */
+    public function connect_base_url(): string
+    {
+        if (defined('CAPTCHAAPI_CONNECT_BASE_URL') && CAPTCHAAPI_CONNECT_BASE_URL) {
+            return untrailingslashit((string) CAPTCHAAPI_CONNECT_BASE_URL);
+        }
+
+        return $this->site_url();
+    }
+
     public function is_configured(): bool
     {
         return $this->site_key() !== '' && $this->secret_keys() !== [];
