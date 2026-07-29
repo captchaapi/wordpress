@@ -4,7 +4,7 @@ Tags: captcha, recaptcha, spam, contact form, gdpr
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 2.2.0
+Stable tag: 2.2.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -158,14 +158,19 @@ If you use the "Connect to captchaapi.eu" button on the settings screen, the plu
 
 == Screenshots ==
 
-1. The settings screen. Keys are in place, and the Activity panel shows what the plugin has actually been doing - on this site and against your account allowance.
-2. Choose which forms to protect. WordPress login, registration, lost password and comments are always there; every supported form plugin appears as soon as it is active.
-3. A protected login form. No puzzle, no checkbox, nothing for the visitor to solve - just a line confirming the protection is running.
-4. Test connection checks that captchaapi.eu is reachable and that your site key is valid, before a real visitor finds out for you.
-5. Decide what shows under protected forms, and whether submissions go through during an outage on our side.
-6. When the account cannot issue challenges, the plugin says so on every admin screen instead of failing quietly.
+1. Setting up is one button. Connect creates your free account, opens a project locked to this site, and fills both keys in for you - no copying between browser tabs. If you already have an account, the two fields still take your keys by hand.
+2. The settings screen once keys are in place. The Activity panel shows what the plugin has actually been doing - on this site and against your account allowance.
+3. Choose which forms to protect. WordPress login, registration, lost password and comments are always there; every supported form plugin appears as soon as it is active.
+4. A protected login form. No puzzle, no checkbox, nothing for the visitor to solve - just a line confirming the protection is running.
+5. Test connection checks that captchaapi.eu is reachable and that your site key is valid, before a real visitor finds out for you.
+6. Decide what shows under protected forms, and whether submissions go through during an outage on our side.
+7. When the account cannot issue challenges, the plugin says so on every admin screen instead of failing quietly.
 
 == Changelog ==
+
+= 2.2.1 =
+* The directory listing now shows the Connect button 2.2.0 added, as the first screenshot. The setup screen is what a reader decides on, and until now the pictures all showed a plugin that was already configured.
+* No changes to the plugin itself. A screenshot needs a caption to be displayed, and captions travel in readme.txt - hence the version.
 
 = 2.2.0 =
 * Setting the plugin up no longer means copying keys between two browser tabs. With both key fields empty you get a **Connect to captchaapi.eu** button: one screen asks for an email and a password, and your account, a project locked to this site, and both keys are in place when you land back here. The keys never pass through your browser - your server fetches them directly over a server-to-server call.

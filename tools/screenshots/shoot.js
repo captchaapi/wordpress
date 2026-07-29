@@ -10,8 +10,12 @@
  * it runs. A crash between staging and restoring leaves the test site staged;
  * `npm run restore` finishes the job.
  *
+ * Shot 1 comes last on purpose. It needs both key fields empty, and the shots
+ * before it need working keys - a real "Connected", a real badge on the login
+ * form. Emptying the keys first would quietly hollow all of them out.
+ *
  * Usage:
- *   npm run shoot            all six
+ *   npm run shoot            all seven
  *   npm run shoot -- 2 5     only those
  *
  * Environment:
@@ -33,7 +37,7 @@ const WP_PATH = process.env.WP_PATH || path.resolve(__dirname, '../../../wp-test
 const VIEWPORT = { width: 1280, height: 860 };
 const SCALE = 1.5;
 
-const only = process.argv.slice(2).filter((a) => /^[1-6]$/.test(a));
+const only = process.argv.slice(2).filter((a) => /^[1-7]$/.test(a));
 const wanted = (n) => only.length === 0 || only.includes(String(n));
 
 function wp(args) {
@@ -174,18 +178,18 @@ async function run() {
   const page = await context.newPage();
 
   try {
-    if (wanted(1) || wanted(2) || wanted(4) || wanted(5)) {
+    if (wanted(2) || wanted(3) || wanted(5) || wanted(6)) {
       state('healthy');
 
       await page.goto(admin + 'options-general.php?page=captchaapi', { waitUntil: 'networkidle' });
       await tidy(page);
       await markSections(page);
 
-      if (wanted(1)) {
-        await section(page, 'screenshot-1.png', null, '.captchaapi-activity + .description');
+      if (wanted(2)) {
+        await section(page, 'screenshot-2.png', null, '.captchaapi-activity + .description');
       }
 
-      if (wanted(4)) {
+      if (wanted(5)) {
         await page.click('#captchaapi-test');
         await page.waitForFunction(
           () => {
@@ -206,19 +210,19 @@ async function run() {
           }
         });
 
-        await section(page, 'screenshot-4.png', '#shot-keys-start', '#shot-keys-end');
+        await section(page, 'screenshot-5.png', '#shot-keys-start', '#shot-keys-end');
       }
 
-      if (wanted(2)) {
-        await section(page, 'screenshot-2.png', '#shot-forms-start', '#shot-forms-end');
+      if (wanted(3)) {
+        await section(page, 'screenshot-3.png', '#shot-forms-start', '#shot-forms-end');
       }
 
-      if (wanted(5)) {
-        await section(page, 'screenshot-5.png', '#shot-behavior-start', '#shot-behavior-end');
+      if (wanted(6)) {
+        await section(page, 'screenshot-6.png', '#shot-behavior-start', '#shot-behavior-end');
       }
     }
 
-    if (wanted(6)) {
+    if (wanted(7)) {
       state('blocked');
 
       // Searching for the plugin keeps the frame on the notice and the one row
@@ -227,10 +231,10 @@ async function run() {
       await tidy(page);
       // The repeated column header under a single-row table only eats frame.
       await page.addStyleTag({ content: '.wp-list-table tfoot { display: none !important; }' });
-      await section(page, 'screenshot-6.png', null, '#wpbody-content .wp-list-table');
+      await section(page, 'screenshot-7.png', null, '#wpbody-content .wp-list-table');
     }
 
-    if (wanted(3)) {
+    if (wanted(4)) {
       const anon = await browser.newContext({
         ignoreHTTPSErrors: true,
         viewport: { width: 760, height: 720 },
@@ -265,12 +269,36 @@ async function run() {
       });
 
       await login.screenshot({
-        path: path.join(OUT, 'screenshot-3.png'),
+        path: path.join(OUT, 'screenshot-4.png'),
         clip: { x: 0, y: 0, width: 760, height: bottom },
       });
 
-      console.log('  screenshot-3.png', 760 * SCALE + 'x' + Math.round(bottom * SCALE));
+      console.log('  screenshot-4.png', 760 * SCALE + 'x' + Math.round(bottom * SCALE));
       await anon.close();
+    }
+
+    // Last, because it takes the keys away: the shots above need a live account
+    // behind them, and `restore` at the end of the run puts the keys back.
+    if (wanted(1)) {
+      state('fresh');
+
+      await page.goto(admin + 'options-general.php?page=captchaapi', { waitUntil: 'networkidle' });
+      await tidy(page);
+      await markSections(page);
+      await page.waitForSelector('#shot-keys-start', { timeout: 30000 });
+
+      // The button names the hostname it would register, which on this machine
+      // is a local dev domain. Same reasoning as the site key above: what the
+      // directory shows must not be an artefact of the test site.
+      await page.evaluate(() => {
+        document.querySelectorAll('.captchaapi-settings code').forEach((el) => {
+          if (/\.(test|local|localhost)(:\d+)?$/.test((el.textContent || '').trim())) {
+            el.textContent = 'example.com';
+          }
+        });
+      });
+
+      await section(page, 'screenshot-1.png', '#shot-keys-start', '#shot-keys-end');
     }
   } finally {
     await browser.close();

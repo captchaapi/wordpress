@@ -7,7 +7,10 @@
  * Activity panel with a month of traffic behind it, and an account the service
  * has stopped issuing challenges for. Both are options, so both can be staged.
  *
- * Run through wp-cli: wp eval-file state.php <backup|healthy|blocked|restore>
+ * The other direction matters too: the Connect button only exists while both key
+ * fields are empty, which is the one state a configured test site can never show.
+ *
+ * Run through wp-cli: wp eval-file state.php <backup|fresh|healthy|blocked|restore>
  *
  * Everything it overwrites is saved first, and restore puts all of it back -
  * including the site language, which is forced to English because the shots go
@@ -37,6 +40,26 @@ switch ($mode) {
         update_option('WPLANG', '');
 
         WP_CLI::success('Saved the current state to ' . $backup_file . ' and switched the admin to English.');
+        break;
+
+    case 'fresh':
+        // Everything except the keys, so the shot shows a plugin that has been
+        // installed and not yet connected - not one with its settings wiped.
+        $options = get_option('captchaapi_options', []);
+        $options = is_array($options) ? $options : [];
+
+        $options['site_key']   = '';
+        $options['secret_key'] = '';
+
+        update_option('captchaapi_options', $options, false);
+
+        // A site with no keys has nothing to report about the service, and a
+        // leftover verdict from the configured state would contradict the screen.
+        delete_option('captchaapi_last_service_state');
+        delete_transient('captchaapi_service_state');
+        delete_transient('captchaapi_usage');
+
+        WP_CLI::success('Emptied both key fields so the Connect button appears.');
         break;
 
     case 'healthy':
@@ -130,5 +153,5 @@ switch ($mode) {
         break;
 
     default:
-        WP_CLI::error('Usage: wp eval-file state.php <backup|healthy|blocked|restore>');
+        WP_CLI::error('Usage: wp eval-file state.php <backup|fresh|healthy|blocked|restore>');
 }

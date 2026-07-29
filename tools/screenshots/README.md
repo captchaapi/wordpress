@@ -25,7 +25,7 @@ Nothing here ships: `tools/` is excluded from the plugin zip.
 ```sh
 cd tools/screenshots
 npm install
-WP_PATH=/path/to/wp npm run shoot        # all six
+WP_PATH=/path/to/wp npm run shoot        # all seven
 WP_PATH=/path/to/wp npm run shoot -- 2 5 # only those
 ```
 
