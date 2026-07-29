@@ -67,7 +67,7 @@ class Captchaapi_Notices
         printf(
             '<div class="notice notice-error"><p><strong>%1$s</strong> %2$s</p><p>%3$s <a href="%4$s" target="_blank" rel="noopener noreferrer">%5$s</a></p></div>',
             esc_html__('captchaapi.eu is not protecting your forms.', 'captchaapi'),
-            esc_html(Captchaapi_Gate::reason_for($code, Captchaapi_Options::site_origin())),
+            esc_html(Captchaapi_Gate::reason_for($code, Captchaapi_Options::site_host())),
             esc_html__('Protected forms are being rejected until this is resolved. Logging in and resetting a password keep working.', 'captchaapi'),
             esc_url($this->options->site_url()),
             esc_html__('Open your captchaapi.eu dashboard', 'captchaapi')

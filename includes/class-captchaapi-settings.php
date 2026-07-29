@@ -150,9 +150,9 @@ class Captchaapi_Settings
                 // textContent, which escapes it. Escaping here as well would
                 // show the entities.
                 return sprintf(
-                    /* translators: %s: this site's own origin, e.g. https://example.com */
+                    /* translators: %s: this site's own hostname, e.g. shop.example.com */
                     __('The site key is valid, but this site\'s domain is not in the project\'s allowed domains. Add %s to the project at captchaapi.eu.', 'captchaapi'),
-                    Captchaapi_Options::site_origin()
+                    Captchaapi_Options::site_host()
                 );
             case 'free_tier_limit_reached':
                 return __('The free tier limit for this billing period has been reached.', 'captchaapi');
@@ -518,7 +518,7 @@ class Captchaapi_Settings
         if ($blocked) {
             printf(
                 '<p><strong>%s</strong></p>',
-                esc_html(Captchaapi_Gate::reason_for($problem['code'], Captchaapi_Options::site_origin()))
+                esc_html(Captchaapi_Gate::reason_for($problem['code'], Captchaapi_Options::site_host()))
             );
         }
 

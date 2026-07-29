@@ -175,26 +175,89 @@ class Captchaapi_Options
     }
 
     /**
-     * The origin this site sends to captchaapi.eu, and the one the project's
-     * allowed-domain list is matched against. Scheme, host and a non-standard
-     * port - the shape a browser puts in an `Origin` header.
+     * The hostname a project's allowed-domain list is matched against: lower
+     * case, punycode, and a port only when it is not the default. No scheme -
+     * the list stores bare hostnames, so this is the string an owner types in.
      *
-     * Static, and the only static method here, because it reads nothing from
-     * the instance: home_url() is the whole input. Deliberate rather than
-     * accidental - Captchaapi_Gate has no Options of its own and needs this to
-     * name the domain in a `domain_not_allowed` message.
+     * Static, along with site_origin() below, because home_url() is the whole
+     * input and neither reads anything from the instance. Deliberate rather
+     * than accidental: Captchaapi_Gate has no Options of its own and needs both
+     * to name the domain in a `domain_not_allowed` message.
+     */
+    public static function site_host(): string
+    {
+        $parts = wp_parse_url(home_url());
+        $host  = isset($parts['host']) ? (string) $parts['host'] : '';
+
+        if ($host === '') {
+            return '';
+        }
+
+        // Lower case after the conversion, not before. strtolower() is byte
+        // wise, so on an internationalised host it changes the ASCII bytes and
+        // leaves the rest, which is not the same string in any encoding;
+        // idn_to_ascii() folds case itself and answers in ASCII.
+        $host = strtolower(self::to_punycode($host));
+
+        return empty($parts['port']) ? $host : $host . ':' . (int) $parts['port'];
+    }
+
+    /**
+     * What goes in an `Origin` header: the same hostname with its scheme in
+     * front. The allow-list is compared against the host part of this, which is
+     * why the two share a definition rather than parsing home_url() twice.
      */
     public static function site_origin(): string
     {
-        $parts = wp_parse_url(home_url());
+        $host = self::site_host();
 
-        if (! is_array($parts) || empty($parts['host'])) {
+        if ($host === '') {
             return home_url();
         }
 
-        $origin = (isset($parts['scheme']) ? $parts['scheme'] : 'https') . '://' . $parts['host'];
+        $parts = wp_parse_url(home_url());
 
-        return isset($parts['port']) ? $origin . ':' . $parts['port'] : $origin;
+        return (isset($parts['scheme']) ? $parts['scheme'] : 'https') . '://' . $host;
+    }
+
+    /**
+     * Browsers send punycode in `Origin` and the allow-list is an exact match,
+     * so an internationalised domain has to be converted before either is
+     * compared.
+     *
+     * `idn_to_ascii()` needs ext-intl, which plenty of shared hosts omit, so
+     * the Requests encoder bundled with WordPress is the fallback. Its class
+     * was renamed in WordPress 6.2 and this plugin still supports 6.0, hence
+     * both names - the modern one first, because the old one resolves through
+     * a deprecation shim on current installs.
+     */
+    private static function to_punycode(string $host): string
+    {
+        if (function_exists('idn_to_ascii') && defined('INTL_IDNA_VARIANT_UTS46')) {
+            // The default variant is still the deprecated 2003 one on PHP 7.4;
+            // it only changed in PHP 8.0, so pass it explicitly.
+            $converted = idn_to_ascii($host, IDNA_DEFAULT, INTL_IDNA_VARIANT_UTS46);
+
+            if (is_string($converted) && $converted !== '') {
+                return $converted;
+            }
+        }
+
+        foreach (['WpOrg\\Requests\\IdnaEncoder', 'Requests_IDNAEncoder'] as $encoder) {
+            if (! class_exists($encoder)) {
+                continue;
+            }
+
+            try {
+                return (string) call_user_func([$encoder, 'encode'], $host);
+            } catch (Exception $e) {
+                break;
+            }
+        }
+
+        // Nothing available: hand over the host as typed. The server rejects
+        // anything non-ASCII with a readable message, which beats a fatal.
+        return $host;
     }
 
     public function is_configured(): bool

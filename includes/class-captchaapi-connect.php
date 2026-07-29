@@ -82,7 +82,7 @@ class Captchaapi_Connect
 
         check_admin_referer(self::START_ACTION);
 
-        $host = $this->site_host();
+        $host = Captchaapi_Options::site_host();
 
         // render_button() hides itself in this case, so getting here means the
         // URL was reached some other way. Stopping before a verifier is written
@@ -268,7 +268,7 @@ class Captchaapi_Connect
         // Nothing to register, so nothing to connect. The description below
         // names the hostname the project would be locked to, and offering the
         // button with that name blank would promise something we cannot do.
-        if ($this->site_host() === '') {
+        if (Captchaapi_Options::site_host() === '') {
             return;
         }
 
@@ -288,7 +288,7 @@ class Captchaapi_Connect
             printf(
                 /* translators: %s: the site hostname that will be registered. */
                 esc_html__('Creates your free account and a project for %s, then fills both keys in for you. Only that hostname and the address of this admin screen are sent; the keys come back over a direct server-to-server call.', 'captchaapi'),
-                '<code>' . esc_html($this->site_host()) . '</code>'
+                '<code>' . esc_html(Captchaapi_Options::site_host()) . '</code>'
             );
             ?>
         </p>
@@ -434,64 +434,6 @@ class Captchaapi_Connect
         $clean = sanitize_text_field($value);
 
         return $clean === $value ? $clean : '';
-    }
-
-    /**
-     * The hostname the widget will actually run on, in the form the server
-     * compares against: browsers send punycode in `Origin`, and the allow-list
-     * is an exact match.
-     *
-     * `idn_to_ascii()` needs ext-intl, which plenty of shared hosts omit, so
-     * the Requests encoder bundled with WordPress is the fallback. Its class
-     * was renamed in WordPress 6.2 and this plugin still supports 6.0, hence
-     * both names - the modern one first, because the old one resolves through
-     * a deprecation shim on current installs.
-     */
-    private function site_host(): string
-    {
-        $parts = wp_parse_url(home_url());
-        $host  = isset($parts['host']) ? strtolower((string) $parts['host']) : '';
-
-        if ($host === '') {
-            return '';
-        }
-
-        $ascii = $this->to_punycode($host);
-
-        if (! empty($parts['port'])) {
-            $ascii .= ':' . (int) $parts['port'];
-        }
-
-        return $ascii;
-    }
-
-    private function to_punycode(string $host): string
-    {
-        if (function_exists('idn_to_ascii') && defined('INTL_IDNA_VARIANT_UTS46')) {
-            // The default variant is still the deprecated 2003 one on PHP 7.4;
-            // it only changed in PHP 8.0, so pass it explicitly.
-            $converted = idn_to_ascii($host, IDNA_DEFAULT, INTL_IDNA_VARIANT_UTS46);
-
-            if (is_string($converted) && $converted !== '') {
-                return $converted;
-            }
-        }
-
-        foreach (['WpOrg\\Requests\\IdnaEncoder', 'Requests_IDNAEncoder'] as $encoder) {
-            if (! class_exists($encoder)) {
-                continue;
-            }
-
-            try {
-                return (string) call_user_func([$encoder, 'encode'], $host);
-            } catch (Exception $e) {
-                break;
-            }
-        }
-
-        // Nothing available: hand over the host as typed. The server rejects
-        // anything non-ASCII with a readable message, which beats a fatal.
-        return $host;
     }
 
     private function return_url(): string

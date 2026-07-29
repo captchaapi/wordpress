@@ -151,7 +151,7 @@ class Captchaapi_Gate
         if ($status === Captchaapi_Verifier::NOT_ENFORCEABLE) {
             $code = $this->verifier->last_error_code();
             $this->service->remember(Captchaapi_Service::NOT_ENFORCEABLE, $code);
-            $this->failure_reason = self::reason_for($code, Captchaapi_Options::site_origin());
+            $this->failure_reason = self::reason_for($code, Captchaapi_Options::site_host());
 
             return $this->always_open($surface);
         }
@@ -179,7 +179,7 @@ class Captchaapi_Gate
         }
 
         if ($state === Captchaapi_Service::NOT_ENFORCEABLE) {
-            $this->failure_reason = self::reason_for($this->service->blocking_code(), Captchaapi_Options::site_origin());
+            $this->failure_reason = self::reason_for($this->service->blocking_code(), Captchaapi_Options::site_host());
 
             return $this->always_open($surface);
         }
@@ -207,7 +207,7 @@ class Captchaapi_Gate
      * escaped the unknown code on its way out, which meant the two callers that
      * escape correctly escaped it twice.
      *
-     * @param string $origin The site's own origin, for the one code where
+     * @param string $host   The site's own hostname, for the one code where
      *                       naming it turns a diagnosis into an instruction.
      *                       Optional so existing callers keep working.
      */
@@ -215,7 +215,7 @@ class Captchaapi_Gate
     {
         if ($code === 'domain_not_allowed' && $origin !== '') {
             return sprintf(
-                /* translators: %s: this site's own origin, e.g. https://example.com */
+                /* translators: %s: this site's own hostname, e.g. shop.example.com */
                 __('This domain is not in the project\'s allowed domains. Add %s to the project at captchaapi.eu.', 'captchaapi'),
                 $origin
             );
