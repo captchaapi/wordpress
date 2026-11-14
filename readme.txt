@@ -4,7 +4,7 @@ Tags: captcha, recaptcha, spam, contact form, gdpr
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 2.2.2
+Stable tag: 2.2.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -167,6 +167,9 @@ If you use the "Connect to captchaapi.eu" button on the settings screen, the plu
 7. When the account cannot issue challenges, the plugin says so on every admin screen instead of failing quietly.
 
 == Changelog ==
+
+= 2.2.3 =
+* New banner on the plugin page, matching the redesigned captchaapi.eu. Nothing in the plugin itself changed.
 
 = 2.2.2 =
 * Tested against WordPress 7.1. Nothing in the plugin itself changed - this release only brings the directory listing up to date, so the compatibility warning on the plugin page stays away.
