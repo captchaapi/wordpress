@@ -4,7 +4,7 @@ Tags: captcha, recaptcha, spam, contact form, gdpr
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 2.2.3
+Stable tag: 2.2.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -167,6 +167,9 @@ If you use the "Connect to captchaapi.eu" button on the settings screen, the plu
 7. When the account cannot issue challenges, the plugin says so on every admin screen instead of failing quietly.
 
 == Changelog ==
+
+= 2.2.4 =
+* Banner on the plugin page now highlights the first four bytes of the hash - the part the proof-of-work actually compares against the target. Nothing in the plugin itself changed.
 
 = 2.2.3 =
 * New banner on the plugin page, matching the redesigned captchaapi.eu. Nothing in the plugin itself changed.
